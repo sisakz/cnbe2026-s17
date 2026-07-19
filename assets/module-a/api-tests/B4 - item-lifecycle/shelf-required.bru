@@ -1,0 +1,30 @@
+meta {
+  name: shelf-required
+  type: http
+  seq: 1
+}
+
+patch {
+  url: {{baseUrl}}/items/116/status
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  { "status": "in-storage" }
+}
+
+tests {
+  test("B4: moving to in-storage without a shelf returns 422", function() {
+    expect(res.status).to.equal(422);
+    expect(res.body).to.have.property("message");
+  });
+}

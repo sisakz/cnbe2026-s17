@@ -1,0 +1,57 @@
+meta {
+  name: reset-db
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/claims/track/CL-F8DA73A7
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { execFileSync } = require("child_process");
+  const fs = require("fs");
+  const path = require("path");
+
+  let base;
+  try { base = bru.cwd(); } catch (e) { base = process.cwd(); }
+
+  const dump = path.resolve(base, bru.getEnvVar("dumpPath"));
+  const mysqlBin = bru.getEnvVar("mysqlPath") || "mysql";
+  const pass = bru.getEnvVar("dbPass") || "";
+  const args = [
+    "-h", bru.getEnvVar("dbHost") || "127.0.0.1",
+    "-P", String(bru.getEnvVar("dbPort") || 3306),
+    "-u", bru.getEnvVar("dbUser"),
+  ];
+  if (pass !== "") args.push(`-p${pass}`);
+  const db = bru.getEnvVar("dbName");
+
+  try {
+    execFileSync(mysqlBin, [...args, db], { input: fs.readFileSync(dump, "utf8") });
+    const count = execFileSync(mysqlBin, [...args, "-N", "-e", `SELECT COUNT(*) FROM ${db}.claims`])
+      .toString().trim();
+    bru.setVar("resetResult", count);
+    bru.setVar(
+      "resetMessage",
+      count === "61"
+        ? "Database reset was successful"
+        : `Database reset failed: expected 61 claims, got ${count}`
+    );
+  } catch (e) {
+    const err = e.message.split("\n")[0];
+    bru.setVar("resetResult", "IMPORT FAILED: " + err);
+    bru.setVar("resetMessage", "Database reset failed: " + err);
+  }
+}
+
+tests {
+  test("A: database restored from the provided dump", function() {
+    expect(bru.getVar("resetResult")).to.equal("61");
+    expect(bru.getVar("resetMessage")).to.equal("Database reset was successful");
+    expect(res.getStatus()).to.equal(200);
+    expect(res.body.data.reference_code).to.equal("CL-F8DA73A7");
+  });
+}

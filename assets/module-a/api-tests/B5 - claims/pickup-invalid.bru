@@ -1,0 +1,29 @@
+meta {
+  name: pickup-invalid
+  type: http
+  seq: 6
+}
+
+patch {
+  url: {{baseUrl}}/claims/36/status
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  { "status": "under-review" }
+}
+
+tests {
+  test("B5: resolved claim cannot go back to under-review", function() {
+    expect(res.status).to.equal(422);
+  });
+}

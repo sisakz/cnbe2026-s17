@@ -1,0 +1,22 @@
+meta {
+  name: item-back-in-storage
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{baseUrl}}/items/{{matchItemId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminToken}}
+}
+
+tests {
+  test("B6: the released item is back in storage", function() {
+    expect(res.status).to.equal(200);
+    expect(res.body.data.status).to.equal("in-storage");
+  });
+}

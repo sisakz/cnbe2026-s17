@@ -1,0 +1,22 @@
+meta {
+  name: staff-token-invalidated
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/items
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminToken}}
+}
+
+tests {
+  test("Z: the staff token no longer works after logout", function() {
+    expect(res.status).to.equal(401);
+    expect(res.body.message).to.equal("Unauthenticated");
+  });
+}

@@ -1,0 +1,29 @@
+meta {
+  name: match-requires-review
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/claims/16/match
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  { "item_id": {{matchItemId}} }
+}
+
+tests {
+  test("B6: match requires the claim to be under review", function() {
+    expect(res.status).to.equal(422);
+  });
+}

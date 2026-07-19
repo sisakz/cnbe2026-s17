@@ -1,0 +1,25 @@
+meta {
+  name: pagination-structure
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/items?page=2
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminToken}}
+}
+
+tests {
+  test("Z: paginated responses expose data, links and meta with 15 per page", function() {
+    expect(res.status).to.equal(200);
+    expect(res.body).to.have.all.keys("data", "links", "meta");
+    expect(res.body.meta.current_page).to.equal(2);
+    expect(res.body.meta.per_page).to.equal(15);
+    expect(res.body.meta).to.include.all.keys("current_page", "last_page", "per_page", "total");
+  });
+}

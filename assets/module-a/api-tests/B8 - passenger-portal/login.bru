@@ -1,0 +1,34 @@
+meta {
+  name: login
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/passenger/login
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  { "email": "passenger1@email.com", "password": "passenger123" }
+}
+
+script:post-response {
+  if (res.status === 200) {
+    bru.setEnvVar("passengerToken", res.body.data.token);
+  }
+}
+
+tests {
+  test("B8: passenger login returns 200 with token and profile", function() {
+    expect(res.status).to.equal(200);
+    expect(res.body.data.token).to.be.a("string");
+    expect(res.body.data.passenger.first_name).to.equal("Li");
+    expect(res.body.data.passenger.last_name).to.equal("Wei");
+  });
+}

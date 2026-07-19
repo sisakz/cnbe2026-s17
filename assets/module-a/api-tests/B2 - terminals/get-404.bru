@@ -1,0 +1,22 @@
+meta {
+  name: get-404
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/terminals/999
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminToken}}
+}
+
+tests {
+  test("B2: unknown terminal returns 404", function() {
+    expect(res.status).to.equal(404);
+    expect(res.body.message).to.equal("Resource not found");
+  });
+}

@@ -1,0 +1,23 @@
+meta {
+  name: scoping-list
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/terminals
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{agentToken}}
+}
+
+tests {
+  test("B2: agent sees only assigned terminals", function() {
+    expect(res.status).to.equal(200);
+    const codes = res.body.data.map(t => t.code).sort();
+    expect(codes).to.eql(["PVG-S1", "PVG-T1"]);
+  });
+}

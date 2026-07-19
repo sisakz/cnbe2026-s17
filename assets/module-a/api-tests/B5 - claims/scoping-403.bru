@@ -1,0 +1,22 @@
+meta {
+  name: scoping-403
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{baseUrl}}/claims/1
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{agent2Token}}
+}
+
+tests {
+  test("B5: agent gets 403 for a claim outside their terminals", function() {
+    expect(res.status).to.equal(403);
+    expect(res.body.message).to.equal("Forbidden");
+  });
+}

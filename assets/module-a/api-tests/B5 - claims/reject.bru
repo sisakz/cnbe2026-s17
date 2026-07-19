@@ -1,0 +1,30 @@
+meta {
+  name: reject
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{baseUrl}}/claims/19/reject
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  { "reason": "No matching item found in storage after search" }
+}
+
+tests {
+  test("B5: open claim can be rejected", function() {
+    expect(res.status).to.equal(200);
+    expect(res.body.data.status).to.equal("rejected");
+  });
+}

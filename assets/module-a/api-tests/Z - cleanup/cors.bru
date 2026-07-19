@@ -1,0 +1,21 @@
+meta {
+  name: cors
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/claims/track/CL-NOTFOUND
+  body: none
+  auth: none
+}
+
+headers {
+  Origin: http://example.com
+}
+
+tests {
+  test("Z: CORS headers are present for cross-origin requests", function() {
+    expect(res.headers["access-control-allow-origin"]).to.equal("*");
+  });
+}

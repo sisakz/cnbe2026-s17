@@ -1,0 +1,29 @@
+meta {
+  name: match-unavailable-item
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/claims/10/match
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  { "item_id": 73 }
+}
+
+tests {
+  test("B6: an item that is not in storage cannot be matched", function() {
+    expect(res.status).to.equal(422);
+  });
+}

@@ -1,0 +1,22 @@
+meta {
+  name: passenger-token-invalidated
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/passenger/profile
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{passengerToken}}
+}
+
+tests {
+  test("Z: the passenger token no longer works after logout", function() {
+    expect(res.status).to.equal(401);
+    expect(res.body.message).to.equal("Unauthenticated");
+  });
+}
