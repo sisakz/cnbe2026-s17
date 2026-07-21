@@ -1,8 +1,8 @@
-# Test Project Outline – Module B – REST API Client Frontend
+# Test Project Outline – Module C – REST API Client Frontend
 
 ## Competition time
 
-Competitors will have **3 hours** to complete Module B.
+Competitors will have **3 hours** to complete Module C.
 
 ## Introduction
 
@@ -12,7 +12,7 @@ In this module, you must build the **ReClaim passenger portal**, a consumer-faci
 
 ## General Description of Project and Tasks
 
-You will be given a working solution of the Module A ReClaim API. You must use the provided solution and must not implement, replace, or modify the backend. The API documentation supplied with the solution is the source of truth for request fields, response structures, validation rules, status codes, and business rules.
+You will be given a working solution of the Module B ReClaim API. You must use the provided solution and must not implement, replace, or modify the backend. The API documentation supplied with the solution is the source of truth for request fields, response structures, validation rules, status codes, and business rules.
 
 **Assessment aid in the provided API:** `GET /passenger/claims?status=rejected` is intentionally delayed by about **2 seconds**. Other status filters respond normally. This delay exists only so out-of-order responses can be tested reliably. Do not special-case only `rejected` in your client; handle stale responses for every filter change.
 
@@ -61,7 +61,9 @@ The session must survive page reloads. On sign-out, or when a request that requi
 
 ### Application shell and navigation
 
-The application must have a clear, consistent passenger-facing layout and navigation. Use **path-based** client routes (framework History mode). These paths are mandatory for assessment — markers may open them directly. Do not use hash routing (`#/...`).
+The application must have a clear, consistent passenger-facing layout and navigation. Visual design polish is not the most important factor; a working, usable application that correctly supports the required passenger workflows is. A Font Awesome package is provided in `assets/fontawesome` for icons if you choose to use it.
+
+Use **path-based** client routes (framework History mode). These paths are mandatory for assessment — markers may open them directly. Do not use hash routing (`#/...`).
 
 - Unauthenticated visitors must be able to register, sign in, and use public claim tracking.
 - Authenticated passengers must additionally be able to file a claim, view their claims, open a claim's details, edit their profile, and sign out.
@@ -291,9 +293,9 @@ The result must look and behave like a public airport passenger service, not an 
 
 ## Assessment
 
-Module B will be assessed in the provided latest stable version of Google Chrome. Assessment will include:
+Module C will be assessed in the provided latest stable version of Google Chrome. Assessment will include:
 
-- Correct integration with the provided Module A API
+- Correct integration with the provided Module B API
 - Completeness and correctness of passenger workflows
 - SPA routing, authentication persistence, and route protection
 - Multi-step form state, passenger-scoped draft recovery, and validation
