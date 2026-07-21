@@ -1,316 +1,706 @@
-# Test Project Outline – Module B – REST API Client Frontend
+# Module A — API — "ReClaim"
 
-## Competition time
+**Duration**: 3 hours
+**Stack**: Any server-side framework + MySQL
 
-Competitors will have **3 hours** to complete Module B.
+## Scenario
 
-## Introduction
+Shanghai Pudong International Airport (PVG) has commissioned **ReClaim**, a single lost property service for the whole airport. Lost property agents register found items and process passenger claims from any terminal; passengers report lost items online and follow their claim's progress; the system suggests which stored items best match each new claim.
 
-Shanghai Pudong International Airport (PVG) operates **ReClaim**, a single lost-property service for the whole airport. Passengers use ReClaim to report items they have lost, follow the progress of their claims, withdraw claims when an item is found elsewhere, and maintain their contact details.
+The staff desk application and the passenger portal are built by other teams. You deliver the REST API behind them, implemented exactly as specified below. Your implementation will be tested against an automated test suite (Bruno). Responses must match the expected structure, status codes, and business logic precisely.
 
-In this module, you must build the **ReClaim passenger portal**, a consumer-facing frontend for the provided ReClaim REST API. You are responsible for the client-side user interface and user experience only. The staff desk and administration interface are outside the scope of this module.
+## Setup
 
-## General Description of Project and Tasks
+- Import the provided database dump: `dist/database/reclaim-db.sql` (MySQL). The same dataset is also provided as JSON files in `dist/data/json/` as a failsafe — the SQL dump is the primary source and the assessment dataset is the MySQL database
+- All endpoint paths below are **relative to your API base URL**. The base URL may sit at a domain root or under a sub-path — e.g. `http://localhost:8000/api`, `https://DOMAIN/api`, or `http://DOMAIN/<folder>/api`. Your API must work regardless of where it is mounted; you will enter your base URL in the test suite environment.
+- API documentation (Swagger UI) is available in `dist/api-docs/` — open `index.html` in your browser
+- All responses must be JSON — no HTML responses anywhere
+- All staff endpoints require Bearer token authentication (via `POST /login`)
+- All passenger portal endpoints require separate passenger Bearer token authentication (via `POST /passenger/login`)
+- Public endpoints `GET /claims/track/{referenceCode}` and `POST /passenger/register` require no authentication
 
-You will be given a working solution of the Module A ReClaim API. You must use the provided solution and must not implement, replace, or modify the backend. The API documentation supplied with the solution is the source of truth for request fields, response structures, validation rules, status codes, and business rules.
+## Testing Your Work
 
-**Assessment aid in the provided API:** `GET /passenger/claims?status=rejected` is intentionally delayed by about **2 seconds**. Other status filters respond normally. This delay exists only so out-of-order responses can be tested reliably. Do not special-case only `rejected` in your client; handle stale responses for every filter change.
+The same Bruno test suite used for assessment is provided in `dist/api-tests/` — use it throughout the module to check your progress.
 
-Create the application as a **Single Page Application (SPA)** using a modern JavaScript framework. Additional libraries may be used. Routing must be managed by the framework, and reloading a route must restore the same page, except for unsaved form input and temporary messages.
+1. Open Bruno → **Open Collection** → select the `api-tests` folder. If Bruno asks which JavaScript sandbox to use, choose **Developer Mode** — the reset step needs it
+2. Select the **Local** environment and fill in:
+   - `baseUrl` — wherever your API runs, e.g. `http://localhost:8000/api` or `http://localhost/<folder>/api`
+   - `dbName`, `dbUser`, `dbPass` (and `dbHost` / `dbPort` if not local defaults) — your MySQL connection, so the suite can reset your data for you
+   - `mysqlPath` — only if the `mysql` command is not on your PATH, set the full path to the MySQL command-line client
+3. Test names carry the marking sub-criterion (`B1:` … `B8:`) — a green test is the same check the assessors will run
 
-Your API base URL:
-`https://module-a-solution-cYY-YYYY.cnbe.skillsit.eu/api`
+**Testing one part at a time** (recommended while you build — you do not need the whole API working to test the part you are on). Right-click a folder → **Run**, in this order:
 
-All API paths in this document are relative to this base URL.
+1. `A - reset` — re-imports the provided dump directly into your MySQL database. It needs none of your code, so it works from the first minute of the module (some tests change data — always start here)
+2. `B1 - auth` — logs in and stores the tokens every other folder uses
+3. The folder you are working on, e.g. `B3 - items`
 
-The OpenAPI documentation of the backend API is available in `assets/api-docs/` — open `assets/api-docs/index.html` in a browser.
+`B8 - passenger-portal` handles its own passenger login, but still needs steps 1 and 2 first (some of its tests use the staff token).
 
-Only the following API operations are in scope:
+**Running everything**: run from the collection root — folders execute in order, the database is reset from the dump at the start and end automatically, and the run is repeatable.
 
-| Area                     | API operations                                                                                                          |
-| ------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
-| Passenger authentication | `POST /passenger/register`, `POST /passenger/login`, `POST /passenger/logout`                                           |
-| Passenger claims         | `GET /passenger/claims`, `GET /passenger/claims/{id}`, `POST /passenger/claims`, `POST /passenger/claims/{id}/withdraw` |
-| Passenger profile        | `GET /passenger/profile`, `PUT /passenger/profile`                                                                      |
-| Public tracking          | `GET /claims/track/{referenceCode}`                                                                                     |
-| Terminal selection       | `GET /terminals`                                                                                                        |
+## Authentication
 
-Do not call or create interfaces for staff authentication, terminal management, found items, staff claim processing, matching or resolution, dashboards, or `GET /my-terminals`. `GET /terminals` may only be used as a read-only source for the terminal selector in the new-claim form.
+Two separate authentication systems exist:
 
-The following passenger accounts are available for testing:
+### Staff Auth
 
-| Email                   | Password       | Notes                                |
-| ----------------------- | -------------- | ------------------------------------ |
-| `passenger1@email.com`  | `passenger123` | Active passenger                     |
-| `passenger2@email.com`  | `passenger123` | Active passenger                     |
-| `passenger31@email.com` | `passenger123` | Deactivated account; login must fail |
+**`POST /login`**
 
-## Requirements
+Request:
 
-### Authentication
-
-The portal must use the passenger authentication system. An authenticated request must include the passenger token as:
-
-```text
-Authorization: Bearer {token}
+```json
+{ "email": "admin1@reclaim-pvg.cn", "password": "admin123" }
 ```
 
-The session must survive page reloads. On sign-out, or when a request that requires authentication receives a `401 Unauthenticated` response, the current session must be cleared. Only passenger credentials and tokens may be used; credentials and tokens of staff or system operators with elevated privileges must not.
+Response `200`:
 
-### Application shell and navigation
+```json
+{
+  "data": {
+    "token": "kJH8s2Lq...60chars",
+    "user": { "id": 1, "name": "...", "email": "...", "role": "admin" }
+  }
+}
+```
 
-The application must have a clear, consistent passenger-facing layout and navigation. Use **path-based** client routes (framework History mode). These paths are mandatory for assessment — markers may open them directly. Do not use hash routing (`#/...`).
+Response `401`: `{"message": "Invalid credentials"}` — also for inactive accounts.
 
-- Unauthenticated visitors must be able to register, sign in, and use public claim tracking.
-- Authenticated passengers must additionally be able to file a claim, view their claims, open a claim's details, edit their profile, and sign out.
-- Authenticated routes must be guarded. If an unauthenticated visitor requests one, navigate them to the sign-in page and return them to the originally requested URL after successful authentication.
-- The default route `/` must redirect authenticated passengers to the My claims page and others to the sign-in page.
-- Controls and navigation for staff or administrative functions must not appear.
-- The interface must make these situations visually and textually distinct so the passenger always understands what is happening:
-  - **Loading** — data or an action is in progress (for example a spinner, skeleton, or “Loading…” message). Do not show an empty list or a success message while waiting.
-  - **Empty** — the request succeeded but there is nothing to show (for example “You have no claims yet”). This must not look like an error or like loading.
-  - **Success** — an action completed correctly (for example a confirmation after filing a claim or updating the profile).
-  - **Error** — a request failed or validation prevented submission; show a clear message and, where useful, a way to retry.
+**`POST /logout`** — Invalidate token. No request body. Response `200`: `{"message": "Logged out successfully"}`
 
-### Registration page
+All authenticated endpoints require header: `Authorization: Bearer {token}`
 
-The registration page route is `/register`. It must create a passenger account.
+Unauthenticated requests return `401`: `{"message": "Unauthenticated"}`
 
-The form must collect:
+### Passenger Auth
 
-- First name
-- Last name
-- Email address
-- Phone number (optional)
-- Address line 1
-- Address line 2 (optional)
-- City
-- Postcode
-- Country
-- Password, with a minimum length of 8 characters
+`POST /passenger/register` and `POST /passenger/login` — see Passenger Portal section. Separate token system from staff; staff tokens are rejected on `/passenger/*` endpoints and vice versa.
 
-Validate required fields, email format, and password length before submission. Display field-specific validation messages returned by the API. A successful registration returns a passenger token and passenger details; store the session and navigate to the My claims page.
+## Roles
 
-### Sign-in page and sign out
+- **Admin** — full access to all endpoints and all data
+- **Agent** — sees only data for their assigned terminals. Can register items and process claims for their terminals. Assigned to **multiple terminals** (many-to-many); all queries scoped to their assigned terminals.
 
-The sign-in page route is `/login`. It must accept an email address and password and authenticate through the appropriate endpoint.
+Forbidden actions return `403`: `{"message": "Forbidden"}`
 
-- On success, store the returned passenger token and passenger details and continue to the originally requested authenticated URL, or to the My claims page if none was requested.
-- Invalid credentials or an inactive account return `401`; show a clear message without exposing sensitive information.
-- An authenticated passenger must be able to sign out from the application shell.
-- Signing out must clear the local session and navigate to the sign-in page. The local session must still be cleared if the remote token is already invalid.
+## Seed Data
 
-### New claim page
+### Terminals
 
-The new-claim page route is `/claims/new`. Authenticated passengers must be able to report a lost item here.
-
-Implement claim reporting as an **assisted multi-step process**:
-
-1. **Where and when** — select the terminal and date lost.
-2. **Item details** — enter the category, brand, colour, description, and flight number.
-3. **Review and submit** — show a complete summary and allow the passenger to return to either previous step without losing data.
-
-The journey must show the current step and completed steps. Passengers may move forward only when the current step is valid. Browser back and forward navigation must not accidentally submit the form or lose already entered values.
-
-The form must contain:
-
-| Field         | Requirement                                                                                             |
-| ------------- | ------------------------------------------------------------------------------------------------------- |
-| Terminal      | Required                                                                                                |
-| Category      | Required. Use exactly: `electronics`, `documents`, `luggage`, `clothing`, `jewellery`, `keys`, `other`. |
-| Brand         | Optional                                                                                                |
-| Colour        | Optional                                                                                                |
-| Description   | Required                                                                                                |
-| Date lost     | Required. Submit as `lost_on`; a future date must not be accepted.                                      |
-| Flight number | Optional                                                                                                |
-
-Client-side validation must prevent clearly invalid submissions. API validation errors must be shown beside the relevant fields where possible.
-
-An unfinished claim draft must be recoverable after a page reload or when the browser is reopened: offer to continue it or discard it. A previous draft must not be retrieved if it was already submitted or discarded, or if a different passenger is signed in.
-
-While terminals are loading, show a loading state and do not allow the passenger to continue without a selected terminal. If loading fails, show an error and a retry action. The passenger must not submit a claim without selecting a terminal from a successful terminals response.
-
-#### Client-side claim quality score
-
-To help passengers provide useful identifying information, calculate a **claim quality score** from 0 to 100 entirely in the browser. This is a client-side guidance feature: it must not call an API, must not be sent with the claim, and must not be presented as a probability that the item will be recovered.
-
-Recalculate the score immediately whenever a relevant form value changes:
-
-| Rule                                                                                                  | Points |
-| ----------------------------------------------------------------------------------------------------- | -----: |
-| A terminal is selected                                                                                |     10 |
-| A category is selected                                                                                |     10 |
-| Brand contains a non-whitespace value                                                                 |     15 |
-| Colour contains a non-whitespace value                                                                |     10 |
-| Flight number contains a non-whitespace value                                                         |     10 |
-| Character threshold 1: Trimmed description contains at least 40 characters                            |     10 |
-| Character threshold 2: Trimmed description contains at least 80 characters                            |    +10 |
-| Description contains at least 12 distinct words, compared case-insensitively and ignoring punctuation |     10 |
-| Date rule 1: `lost_on` is today or 1 day ago                                                          |     15 |
-| Date rule 2: `lost_on` is 2–3 days ago                                                                |     10 |
-| Date rule 3: `lost_on` is 4–7 days ago                                                                |      5 |
-| Date rule 4: `lost_on` is 8 or more days ago, missing, invalid, or in the future                      |      0 |
-
-Only one date rule may contribute to the score. Character thresholds are cumulative, so a description of at least 80 characters receives 20 description-length points. Clamp the final result to the range 0–100.
-
-Display both the numerical score and its label:
-
-| Score  | Label             |
+| Code   | Name              |
 | ------ | ----------------- |
-| 0–39   | Needs more detail |
-| 40–69  | Basic             |
-| 70–89  | Detailed          |
-| 90–100 | Excellent         |
+| PVG-T1 | Terminal 1        |
+| PVG-T2 | Terminal 2        |
+| PVG-S1 | Satellite Hall S1 |
+| PVG-S2 | Satellite Hall S2 |
 
-The review step must show a points breakdown and indicate which optional details could still increase the score. For example, a claim with a terminal and category, brand, colour, no flight number, an 85-character description containing at least 12 distinct words, and today's date scores **90**.
+### Staff
 
-The score is advisory and must never prevent submission when the API-required fields are valid. When a draft is continued or discarded, the score must match the form values again.
+| Email                 | Password | Role  | Terminals                                       |
+| --------------------- | -------- | ----- | ----------------------------------------------- |
+| admin1@reclaim-pvg.cn | admin123 | Admin | All                                             |
+| admin2@reclaim-pvg.cn | admin123 | Admin | All                                             |
+| agent1@reclaim-pvg.cn | agent123 | Agent | Terminal 1 (PVG-T1), Satellite Hall S1 (PVG-S1) |
+| agent2@reclaim-pvg.cn | agent123 | Agent | Terminal 2 (PVG-T2), Satellite Hall S2 (PVG-S2) |
 
-After successful creation:
+### Passengers
 
-- Show a **confirmation modal** with the newly created claim details from the API response. At least show the reference code (`CL-XXXXXXXX`), initial `submitted` status, category, terminal, and date lost. Make the reference code prominent and easy to copy.
-- The modal must offer exactly these two actions:
-  - **Create a new claim** — close the modal, reset the multi-step form to the first step, and leave the passenger ready to file another claim.
-  - **Show my claims** — navigate to the My claims page.
-- If the passenger dismisses the modal in any other way (Escape, a close button, or clicking the backdrop), treat that the same as **Show my claims**: navigate to the My claims page. Do not return them to the finished form with no confirmation left on screen.
+Sample:
 
-### My claims page
+| Email                 | Password     | Name                            | Country  |
+| --------------------- | ------------ | ------------------------------- | -------- |
+| passenger1@email.com  | passenger123 | Li Wei                          | China    |
+| passenger2@email.com  | passenger123 | Maria Santos                    | Portugal |
+| passenger31@email.com | passenger123 | Chen Ming (deactivated account) | China    |
 
-The My claims page route is `/claims`. It must retrieve only the authenticated passenger's claims.
+### Categories
 
-- Display claims newest first as returned by the API.
-- Support the API's paginated response using its `links` or `meta` information. Do not assume that all claims are returned on one page.
-- Show at least the reference code, category, terminal, date lost, and current status for each claim.
-- Allow filtering by status.
-- Each result must link to its claim detail page.
+`electronics`, `documents`, `luggage`, `clothing`, `jewellery`, `keys`, `other`
 
-The claims page must behave as a **stateful claims workspace**. Store the selected status and page number in the URL query string (for example `?status=submitted&page=2`). Reloading the page, sharing its URL, and using browser back or forward must restore the same view. Changing the status must return to page 1.
+---
 
-Requests can finish in a different order when a passenger changes filters quickly. Cancel obsolete requests when possible, or otherwise ensure that an older response can never overwrite the latest selected view. Use the provided API’s intentional delay on `?status=rejected` to verify this: select **rejected**, then quickly switch to another status (for example **resolved**) before the rejected response returns. After both requests have finished, the list and URL must still show the last selected status — not rejected.
+## Endpoints — Terminals (3 endpoints)
 
-Keep the existing results visible with a non-blocking loading indication while moving between pages; do not briefly show an incorrect empty state.
+### `GET /terminals`
 
-### Claim detail and withdrawal page
+All terminals with counts. No pagination. Agents see only their assigned terminals.
 
-The claim detail page route is `/claims/:id`. Retrieve a claim and present all useful fields returned by the passenger claim response, including:
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "Terminal 1",
+      "code": "PVG-T1",
+      "description": "International departures and arrivals, gates A-D",
+      "status": "open",
+      "items_in_storage_count": 14,
+      "open_claims_count": 9,
+      "created_at": "2026-...",
+      "updated_at": "2026-..."
+    }
+  ]
+}
+```
 
-- Reference code
-- Terminal
-- Category
-- Brand and colour when available
-- Description
-- Date lost
-- Flight number when available
-- Status
-- Created and updated dates
-- Resolution date when available
-- Matched-item information when the API includes it
+`open_claims_count` counts claims with status `submitted` or `under-review`.
 
-A passenger may withdraw their own claim only while its status is `submitted` or `under-review`.
+### `GET /terminals/{id}`
 
-- Show the withdrawal action only when the current status is eligible.
-- Ask for confirmation before sending the request.
-- On success, update the displayed claim to the returned `withdrawn` state.
+Single terminal (same fields). Response `404` if not found. Agents get `403` for terminals not assigned to them.
 
-#### Live claim journey
+### `GET /terminals/{id}/items`
 
-Present the claim's current state as a passenger-friendly journey rather than only displaying the raw status value. The journey must correctly represent the API statuses `submitted`, `under-review`, `matched`, `resolved`, `rejected`, and `withdrawn`. Rejected and withdrawn claims are alternative endings and must not be presented as successfully completed journeys.
+Found items at a terminal (paginated). Query: `?status=in-storage`
 
-#### Claim refreshing
+---
 
-While an authenticated claim detail page is open, refresh it every **15 seconds**:
+## Endpoints — Found Items (5 endpoints)
 
-- Do not start a new refresh while the previous refresh is still running.
-- Pause automatic refresh while the page is not visible and refresh immediately when it becomes visible again.
-- When the status changes, update the journey and claim information without a full page reload and announce the change visibly and through an accessible live region.
-- Stop polling when the claim reaches `resolved`, `rejected`, or `withdrawn`.
-- Provide a **manual refresh** control. It must use the same loading and error handling as automatic refresh.
-- A temporary refresh failure must keep the last successful claim visible and show a non-destructive warning. Do not replace the claim with an empty or full-page error state. The manual refresh control may be used to retry.
+### `GET /items`
 
-### Public claim tracking page
+List found items (paginated, 15 per page, newest first). Agents see only items at their assigned terminals.
 
-The public claim tracking entry route is `/track`, and a tracking result uses `/track/:referenceCode`. Anyone must be able to track a claim without signing in by entering its reference code.
+Query params: `?status=in-storage&category=electronics&terminal_id=1&search=iphone` — `search` matches `brand` or `description`.
 
-- Accept a reference code in the `CL-XXXXXXXX` format.
-- On success, navigate to the tracking result route and show only the public response data: reference code, status, category, terminal, date lost, creation date, and resolution date when available.
-- Do not attempt to retrieve or display passenger personal data.
-- A `404` response must produce a clear "claim not found" result and allow another search.
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "reference_code": "FI-K3M9P2QX",
+      "terminal": { "id": 1, "name": "Terminal 1", "code": "PVG-T1" },
+      "category": "electronics",
+      "brand": "Apple",
+      "colour": "black",
+      "description": "iPhone 15 Pro, cracked screen protector",
+      "found_on": "2026-07-01",
+      "found_location": "Gate D68",
+      "storage_shelf": "T1-R3-S07",
+      "status": "in-storage",
+      "registered_by": { "id": 3, "name": "Agent One" },
+      "created_at": "2026-...",
+      "updated_at": "2026-..."
+    }
+  ],
+  "links": { "..." },
+  "meta": { "current_page": 1, "last_page": 9, "per_page": 15, "total": 123 }
+}
+```
 
-The reference code must appear in the tracking result route so that it can be bookmarked or shared. Reloading that URL must repeat the public lookup. Normalize user input to uppercase and remove accidental surrounding whitespace before requesting it, but do not change the internal characters.
+`brand`, `colour`, and `storage_shelf` are nullable.
 
-Apply the same live journey and 15-second refresh behaviour as the authenticated claim detail page. Public tracking must never call an authenticated passenger endpoint or reveal fields outside the public response.
+### `GET /items/{id}`
 
-### Passenger profile page
+Single item (same fields). Response `404` if not found. Agents get `403` if the item is not at their terminals.
 
-The profile page route is `/profile`. It must retrieve the authenticated passenger's profile details and allow updates.
+### `POST /items`
 
-Display and allow editing of:
+Register a found item. Reference code auto-generated (`FI-XXXXXXXX`). Status starts as `registered`. Agents can only register items at their assigned terminals (`403` otherwise). An activity log is auto-created.
 
-- First name
-- Last name
-- Email address
-- Phone number
-- Address line 1
-- Address line 2
-- City
-- Postcode
-- Country
+```json
+{
+  "terminal_id": 1,
+  "category": "electronics",
+  "brand": "Apple",
+  "colour": "black",
+  "description": "iPhone 15 Pro, cracked screen protector",
+  "found_on": "2026-07-01",
+  "found_location": "Gate D68"
+}
+```
 
-The passenger may also set a new password of at least 8 characters. Do not display an existing password and do not send an unchanged or empty password field.
+`brand` and `colour` optional; `found_on` must not be in the future. Response `201` with the created item.
 
-The update endpoint supports partial updates. Show validation errors, including a non-unique email address, next to the relevant fields. After a successful update, show the returned current profile data and a visible success confirmation.
+### `PUT /items/{id}`
 
-### Error handling
+Update item details. All fields optional — send only what changes (partial updates are allowed):
 
-Handle at least the following error cases throughout the application:
+```json
+{ "brand": "Sony", "colour": "navy", "storage_shelf": "T1-R2-S04" }
+```
 
-| Status or condition                          | Required behaviour                                                                                                        |
-| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `401 Unauthenticated` or invalid credentials | For a protected request, clear the invalid session and request sign-in. For the login form, show an authentication error. |
-| `404 Not Found`                              | Explain that the claim or resource was not found or is unavailable to this passenger.                                     |
-| `422 Validation failed`                      | Display the general message and field-specific errors.                                                                    |
-| `422` business-rule failure                  | Display the API's descriptive message near the action that failed.                                                        |
-| Network or unavailable API                   | Explain that the service could not be reached and allow the user to retry.                                                |
+Updatable fields: `category`, `brand`, `colour`, `description`, `found_location`, `storage_shelf`. Status and reference code cannot be changed here. Response `200`: updated item.
 
-Prevent duplicate submissions while a request is in progress. Do not silently discard API errors.
+### `PATCH /items/{id}/status`
 
-The application must prevent stale responses from updating a page after its route or authenticated passenger has changed. Automatic and manual refreshes, route changes, and sign-out must not leave timers or pending requests applying to the wrong page. Timers and pending requests must be cleaned up when their page is left.
+All fields are sent in the JSON request body — there are no query parameters on this endpoint.
 
-### Design, responsiveness, and accessibility
+Moving an item into storage (`storage_shelf` is required — either already set on the item, or sent together with the status):
 
-The result must look and behave like a public airport passenger service, not an internal administration dashboard.
+```json
+{ "status": "in-storage", "storage_shelf": "T1-R3-S07" }
+```
 
-- Use a clear visual hierarchy and readable status indicators. Status must not be communicated by colour alone.
-- Make forms usable with keyboard navigation and associate labels and error messages with their controls.
-- Provide visible focus states and meaningful text for interactive controls.
-- Confirm destructive or consequential actions such as claim withdrawal.
-- The application must remain usable without horizontal scrolling at common mobile and desktop viewport widths.
-- Use appropriate date, loading, and feedback presentation consistently across the portal.
+Retiring an item after the retention period:
 
-## Assessment
+```json
+{ "status": "disposed" }
+```
 
-Module B will be assessed in the provided latest stable version of Google Chrome. Assessment will include:
+Allowed via this endpoint:
 
-- Correct integration with the provided Module A API
-- Completeness and correctness of passenger workflows
-- SPA routing, authentication persistence, and route protection
-- Multi-step form state, passenger-scoped draft recovery, and validation
-- Correct client-side claim quality calculation, breakdown, and guidance
-- URL-driven pagination and filtering, including correct handling of competing requests (verified with the delayed `rejected` filter)
-- Live claim journeys, polling lifecycle, and status-change feedback
-- Error handling and recovery from unavailable or stale API requests
-- User experience, responsive behaviour, and accessibility
-- Appropriate framework use and maintainable frontend code
+- `registered` → `in-storage` — requires `storage_shelf` (`422` without one)
+- `in-storage` → `donated` | `disposed` — **only when `found_on` is more than 60 days ago**; `422` `{"message": "Item is still within the retention period"}` otherwise
 
-Any modification to the provided backend, its database, or its endpoint contract will not be considered during assessment. Only the documented consumer-facing operations listed in this task may be used.
+`matched` and `returned` cannot be set directly (`422`) — they are managed by the claim workflow. Invalid transitions return `422`. Response `200`: updated item. Every status change writes an activity log.
 
-## Mark distribution
+---
 
-| WSOS SECTION | Description                            | Points |
-| ------------ | -------------------------------------- | ------ |
-| 1            | Work organization and self-management  | 4      |
-| 2            | Communication and interpersonal skills | 3      |
-| 3            | Design Implementation                  | 8.5    |
-| 4            | Front-End Development                  | 17.5   |
-| 5            | Back-End Development                   | 0      |
-| **Total**    |                                        | **33** |
+## Endpoints — Claims (4 endpoints)
+
+### `GET /claims`
+
+List claims (paginated, newest first). Agents see only claims for their assigned terminals.
+
+Query params: `?status=submitted&category=electronics&terminal_id=1`
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "reference_code": "CL-A7B2C9DE",
+      "passenger": { "id": 1, "first_name": "Li", "last_name": "Wei", "email": "passenger1@email.com" },
+      "terminal": { "id": 1, "name": "Terminal 1", "code": "PVG-T1" },
+      "category": "electronics",
+      "brand": "Apple",
+      "colour": "black",
+      "description": "Black iPhone with red case, lock screen photo of a dog",
+      "lost_on": "2026-07-01",
+      "flight_number": "MU583",
+      "status": "under-review",
+      "matched_item": null,
+      "created_at": "2026-...",
+      "updated_at": "2026-...",
+      "resolved_at": null
+    }
+  ],
+  "links": { "..." },
+  "meta": { "current_page": 1, "last_page": 5, "per_page": 15, "total": 61 }
+}
+```
+
+`matched_item` is `null` until a match is confirmed, then: `{ "id": 12, "reference_code": "FI-...", "storage_shelf": "T1-R3-S07" }`.
+
+### `GET /claims/{id}`
+
+Single claim (same fields). Response `404` if not found. Agents get `403` if the claim is not for their terminals.
+
+### `PATCH /claims/{id}/status`
+
+Request: `{"status": "under-review"}`
+
+Allowed via this endpoint only:
+
+- `submitted` → `under-review` — an agent picks up the claim
+- `matched` → `under-review` — releases the match: the linked item returns to `in-storage` and `matched_item` becomes `null`
+
+All other statuses are managed by dedicated endpoints (`422` here). Invalid transitions return `422`. Response `200`: updated claim. Activity logs auto-created.
+
+### `GET /claims/track/{referenceCode}` (PUBLIC — no auth)
+
+```json
+{
+  "data": {
+    "reference_code": "CL-A7B2C9DE",
+    "status": "under-review",
+    "category": "electronics",
+    "terminal": { "name": "Terminal 1", "code": "PVG-T1" },
+    "lost_on": "2026-07-01",
+    "created_at": "2026-...",
+    "resolved_at": null
+  }
+}
+```
+
+No passenger personal data is exposed. Response `404` if the reference code is not found.
+
+---
+
+## Endpoints — Matching & Resolution (4 endpoints)
+
+These four endpoints are one workflow. A typical claim travels like this:
+
+1. A passenger files a claim → status `submitted`
+2. An agent picks it up → `PATCH /claims/{id}/status` → `under-review`
+3. The agent asks the system for likely items → `GET /claims/{id}/matches` (ranked suggestions)
+4. The agent confirms one → `POST /claims/{id}/match` → claim **and** item both become `matched`
+5. Then one of three things happens:
+   - the passenger collects it → `POST /claims/{id}/resolve` → claim `resolved`, item `returned`
+   - it was the wrong item → `PATCH /claims/{id}/status` back to `under-review` → link cleared, item back to `in-storage`
+   - nothing suitable exists → `POST /claims/{id}/reject` (open claims only)
+
+### `GET /claims/{id}/matches`
+
+The matching engine. Given an open claim, it scans the stored items and returns the most likely matches, best first, so an agent can see at a glance which shelf to check.
+
+The claim must be `submitted` or `under-review` — `422` otherwise.
+
+**Step 1 — candidates.** Only items with status `in-storage` and the **same category** as the claim are considered. All other items are ignored.
+
+**Step 2 — score each candidate** by comparing it with the claim (maximum 100 points):
+
+| Comparison                                             | Points |
+| ------------------------------------------------------ | ------ |
+| `brand` identical (case-insensitive; both values set)  | 30     |
+| `colour` identical (case-insensitive; both values set) | 25     |
+| item is at the claim's terminal                        | 20     |
+| days between `found_on` and `lost_on`: 0-1 days        | 25     |
+| days between `found_on` and `lost_on`: 2-3 days        | 15     |
+| days between `found_on` and `lost_on`: 4-7 days        | 5      |
+| days between `found_on` and `lost_on`: 8 days or more  | 0      |
+
+**Step 3 — result.** Candidates scoring **less than 40 are dropped**. The rest are returned sorted by `score` (highest first); ties broken by `found_on` (newest first), then `id` (lowest first). Each entry carries the total `score` and its `breakdown`.
+
+In pseudocode — implement exactly this, in any language:
+
+```text
+candidates = items where status = "in-storage" and category = claim.category
+
+for each item in candidates:
+    breakdown.brand    = 30 if claim.brand and item.brand are both set
+                              and equal ignoring case, else 0
+    breakdown.colour   = 25 if claim.colour and item.colour are both set
+                              and equal ignoring case, else 0
+    breakdown.terminal = 20 if item.terminal_id equals claim.terminal_id, else 0
+
+    days = absolute difference in whole days between item.found_on and claim.lost_on
+    breakdown.date     = 25 if days <= 1
+                         15 if days <= 3
+                          5 if days <= 7
+                          0 otherwise
+
+    score = breakdown.brand + breakdown.colour + breakdown.terminal + breakdown.date
+
+keep only results with score >= 40
+sort by score (high to low), then found_on (new to old), then id (low to high)
+return each as { item, score, breakdown }
+```
+
+**Worked example** — claim: jewellery, Cartier, gold, Terminal 1, lost on 1 July:
+
+| Candidate (all jewellery, in storage)                 | brand | colour | terminal | date | Score            |
+| ----------------------------------------------------- | ----- | ------ | -------- | ---- | ---------------- |
+| Cartier gold bracelet, Terminal 1, found 1 July       | 30    | 25     | 20       | 25   | **100**          |
+| Cartier gold necklace, Terminal 2, found 29 June      | 30    | 25     | 0        | 15   | **70**           |
+| Tiffany silver ring, Terminal 1, found 1 July         | 0     | 0      | 20       | 25   | **45**           |
+| Pandora rose-gold bracelet, Terminal 2, found 21 June | 0     | 0      | 0        | 0    | 0 — not returned |
+
+Response `200`:
+
+```json
+{
+  "data": [
+    {
+      "item": {
+        "id": 12,
+        "reference_code": "FI-K3M9P2QX",
+        "terminal": { "id": 1, "name": "Terminal 1", "code": "PVG-T1" },
+        "category": "jewellery",
+        "brand": "Cartier",
+        "colour": "gold",
+        "description": "...",
+        "found_on": "2026-07-01",
+        "storage_shelf": "T1-R3-S07"
+      },
+      "score": 100,
+      "breakdown": { "brand": 30, "colour": 25, "terminal": 20, "date": 25 }
+    }
+  ]
+}
+```
+
+An empty `data` array is returned when nothing scores 40 or more.
+
+> **Check yourself:** the worked example above is real — in the provided seed data, claim `CL-F8DA73A7` (id 1) is exactly this jewellery claim. A correct implementation returns four suggestions scoring **100, 70, 50, 45** for it (the 50 is a brandless gold item not shown in the table). If your endpoint produces those numbers in that order, your engine is right.
+
+### `POST /claims/{id}/match`
+
+Request: `{"item_id": 12}`
+
+Confirm a match. Claim must be `under-review`; item must be `in-storage` (`422` otherwise — the item does not need to appear in the suggestions). Sets claim to `matched`, item to `matched`, links them. Activity logs auto-created for both.
+
+Response `200`: updated claim with `matched_item`.
+
+### `POST /claims/{id}/resolve`
+
+Hand the item back. No request body. Claim must be `matched` (`422` otherwise). Sets claim to `resolved` (auto-sets `resolved_at`), item to `returned`. Activity logs auto-created.
+
+Response `200`: updated claim.
+
+### `POST /claims/{id}/reject`
+
+Request: `{"reason": "No matching item found after 30 days"}` — `reason` optional.
+
+Claim must be `submitted` or `under-review` (`422` otherwise; a `matched` claim must be released first). Sets claim to `rejected`. Activity log auto-created (reason in details).
+
+Response `200`: updated claim.
+
+---
+
+## Endpoints — Dashboard (3 endpoints)
+
+### `GET /dashboard/stats`
+
+Aggregated statistics. Agents see only their assigned terminals' data.
+
+```json
+{
+  "data": {
+    "total_items": 123,
+    "items_in_storage": 67,
+    "total_claims": 61,
+    "open_claims": 20,
+    "today_items": 7,
+    "today_claims": 2,
+    "items_by_category": {
+      "electronics": 18,
+      "documents": 23,
+      "luggage": 20,
+      "clothing": 21,
+      "jewellery": 5,
+      "keys": 14,
+      "other": 22
+    },
+    "claims_by_status": {
+      "submitted": 10,
+      "under-review": 10,
+      "matched": 7,
+      "resolved": 20,
+      "rejected": 8,
+      "withdrawn": 6
+    },
+    "recent_claims": [
+      {
+        "id": 61,
+        "reference_code": "CL-...",
+        "passenger_name": "Li Wei",
+        "category": "electronics",
+        "status": "submitted",
+        "date": "2026-..."
+      }
+    ]
+  }
+}
+```
+
+`open_claims` = `submitted` + `under-review`. `recent_claims` contains the **5 most recent** claims, newest first.
+
+### `GET /dashboard/activity`
+
+20 most recent activity log entries, newest first. Agents see only logs for their terminals' items and claims. Staff actions only — every entry has an associated `user`. Passenger self-service actions (logged with no user) are not shown here.
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "action": "claim_matched",
+      "details": "Claim CL-A7B2C9DE matched to item FI-K3M9P2QX",
+      "item": { "id": 12, "reference_code": "FI-K3M9P2QX" },
+      "claim": { "id": 1, "reference_code": "CL-A7B2C9DE" },
+      "user": { "id": 3, "name": "Agent One", "role": "agent" },
+      "created_at": "2026-..."
+    }
+  ]
+}
+```
+
+`item` or `claim` may be `null` depending on the action.
+
+### `GET /my-terminals` (agents only)
+
+All terminals assigned to the agent, with items registered today and open claims.
+
+```json
+{
+  "data": [
+    {
+      "terminal": {
+        "id": 1,
+        "name": "Terminal 1",
+        "code": "PVG-T1",
+        "description": "...",
+        "status": "open"
+      },
+      "todays_items": [
+        {
+          "id": 1,
+          "reference_code": "FI-...",
+          "category": "...",
+          "description": "...",
+          "status": "registered",
+          "found_location": "..."
+        }
+      ],
+      "open_claims": [
+        {
+          "id": 1,
+          "reference_code": "CL-...",
+          "category": "...",
+          "status": "submitted",
+          "passenger_name": "Li Wei"
+        }
+      ]
+    }
+  ]
+}
+```
+
+Response `403` for admins.
+
+---
+
+## Endpoints — Passenger Portal (9 endpoints)
+
+Separate authentication system for passengers. All endpoints use the `/passenger/*` prefix. Passengers can only access their own data.
+
+### `POST /passenger/register` (PUBLIC — no auth)
+
+```json
+{
+  "first_name": "Chen",
+  "last_name": "Jing",
+  "email": "chen.jing@email.com",
+  "phone": "+8613912345678",
+  "address_1": "88 Century Avenue",
+  "address_2": null,
+  "city": "Shanghai",
+  "postcode": "200120",
+  "country": "China",
+  "password": "mypassword1"
+}
+```
+
+`phone` and `address_2` optional. Email must be unique (`422`); password minimum 8 characters. Response `201` — the passenger is logged in immediately:
+
+```json
+{
+  "data": {
+    "token": "...",
+    "passenger": {
+      "id": 31,
+      "first_name": "Chen",
+      "last_name": "Jing",
+      "email": "chen.jing@email.com",
+      "phone": "+8613912345678",
+      "address_1": "88 Century Avenue",
+      "address_2": null,
+      "city": "Shanghai",
+      "postcode": "200120",
+      "country": "China"
+    }
+  }
+}
+```
+
+### `POST /passenger/login`
+
+Request: `{ "email": "passenger1@email.com", "password": "passenger123" }`
+
+Response `200`: same shape as register. Response `401` for invalid credentials or inactive accounts.
+
+### `POST /passenger/logout`
+
+No request body. Response `200`: `{"message": "Logged out successfully"}`
+
+### `GET /passenger/claims`
+
+Own claims (paginated, newest first). Query: `?status=submitted`. Same claim structure as `GET /claims` but **without** the `passenger` object.
+
+### `GET /passenger/claims/{id}`
+
+Single own claim. Response `404` if not found **or not owned** by the authenticated passenger.
+
+### `POST /passenger/claims`
+
+File a claim. Reference code auto-generated (`CL-XXXXXXXX`), status `submitted`. An activity log is auto-created (with no user).
+
+```json
+{
+  "terminal_id": 1,
+  "category": "electronics",
+  "brand": "Apple",
+  "colour": "black",
+  "description": "Black iPhone with red case, lock screen photo of a dog",
+  "lost_on": "2026-07-01",
+  "flight_number": "MU583"
+}
+```
+
+`brand`, `colour`, `flight_number` optional; `lost_on` must not be in the future. Response `201` with the created claim.
+
+### `POST /passenger/claims/{id}/withdraw`
+
+Own claim only. No request body. Claim must be `submitted` or `under-review` (`422` otherwise). Sets status to `withdrawn`. Response `200`: updated claim. Activity log auto-created (no user).
+
+### `GET /passenger/profile`
+
+```json
+{
+  "data": {
+    "id": 1,
+    "first_name": "Li",
+    "last_name": "Wei",
+    "email": "passenger1@email.com",
+    "phone": "+8613800138000",
+    "address_1": "200 Huaihai Middle Road",
+    "address_2": "Apt 12B",
+    "city": "Shanghai",
+    "postcode": "200021",
+    "country": "China"
+  }
+}
+```
+
+Never exposes `password` or `api_token`.
+
+### `PUT /passenger/profile`
+
+All fields optional — send only what changes:
+
+```json
+{ "phone": "+8613800138099", "city": "Shanghai" }
+```
+
+Updatable fields: `first_name`, `last_name`, `email` (unique), `phone`, `address_1`, `address_2`, `city`, `postcode`, `country`, `password` (min 8 chars).
+
+Response `200`: updated profile (same shape as `GET /passenger/profile`).
+
+---
+
+## Response Structure
+
+**Success:** `{"data": ...}` — single object or array
+**Paginated:** `{"data": [...], "links": {...}, "meta": {"current_page": 1, "last_page": ..., "per_page": 15, "total": ...}}`
+**Error:**
+
+| Status | Meaning                | Response                                            |
+| ------ | ---------------------- | --------------------------------------------------- |
+| 401    | Unauthenticated        | `{"message": "Unauthenticated"}`                    |
+| 403    | Forbidden              | `{"message": "Forbidden"}`                          |
+| 404    | Not found              | `{"message": "Resource not found"}`                 |
+| 422    | Validation failed      | `{"message": "Validation failed", "errors": {...}}` |
+| 422    | Business rule violated | `{"message": "<descriptive message>"}`              |
+
+> **The automated test suite (Bruno) asserts the quoted messages above — and every message quoted verbatim elsewhere in this document — character for character.** Copy them exactly as written; a spelling difference fails the test. Where the table says `<descriptive message>`, the wording is your own and only the status code is asserted.
+
+## General Requirements
+
+- All responses must be JSON
+- **Error messages quoted verbatim in this document must match exactly** (for example `Unauthenticated`, `Invalid credentials`, `Item is still within the retention period`) — they are part of the specification and are asserted by the test suite. Where this document says "descriptive message" without quoting text, the wording is yours; only the status code is asserted
+- **Responses must use the exact HTTP status codes specified for each endpoint** — successful `GET` requests return `200`; creations (`POST /items`, `POST /passenger/claims`, `POST /passenger/register`) return `201`; all other successful requests return `200`. Framework defaults that differ (for example NestJS returning `201` on every POST) must be overridden to match
+- Paginated endpoints: 15 items per page
+- Staff Bearer token authentication on all staff endpoints
+- Separate passenger Bearer token authentication on all passenger portal endpoints; the two token systems are not interchangeable
+- Public endpoints (`register`, claim tracking) require no authentication
+- Role-based access: admin sees all, agent scoped to assigned terminals
+- Passenger endpoints scoped to the authenticated passenger's own data
+- Activity logs auto-generated on item registration, item status changes, claim filing, claim status changes, match, resolve, reject, withdraw
+- Item and claim status transitions enforced — invalid transitions return 422
+- Match suggestions computed exactly as specified — same scores, filtering, and ordering
+- CORS headers enabled for cross-origin requests
+- Passwords stored hashed
+- **30 endpoints total**

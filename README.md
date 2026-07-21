@@ -34,19 +34,19 @@
 
 This competition has **six** separate tasks. Together they cover speed exercises, backend and frontend development, a client application, design implementation, and an AI project. See the linked module briefs for full requirements.
 
-**Schedule (excerpt)**
+## Schedule (excerpt)
 
 | Day            | Module | Focus              |
 | -------------- | ------ | ------------------ |
-| Sat 07/25 (C1) | **A**  | Backend API        |
-| Sat 07/25 (C1) | **B**  | Frontend using API |
-| Sun 07/26 (C2) | **C**  | Backend SSR        |
+| Sat 07/25 (C1) | **A**  | Backend SSR        |
+| Sat 07/25 (C1) | **B**  | Backend API        |
+| Sun 07/26 (C2) | **C**  | Frontend using API |
 
-**Task descriptions (detail)**
+## Task descriptions (detail)
 
-- [Module A - Backend API](module-a.md)
-- [Module B - Frontend using API](module-b.md)
-- [Module C - Backend SSR](module-c.md)
+- [Module A - Backend SSR](module-a.md)
+- [Module B - Backend API](module-b.md)
+- [Module C - Frontend using API](module-c.md)
 
 ## Competitor Handout
 
