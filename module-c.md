@@ -19,11 +19,13 @@ You will be given a working solution of the Module A ReClaim API. You must use t
 Create the application as a **Single Page Application (SPA)** using a modern JavaScript framework. Additional libraries may be used. Routing must be managed by the framework, and reloading a route must restore the same page, except for unsaved form input and temporary messages.
 
 Your API base URL:
-`https://module-a-solution-cYY-YYYY.cnbe.skillsit.eu/api`
+`https://module-b-solution-cYY-YYYY.cnt2026.skillsit.eu/api`
 
 All API paths in this document are relative to this base URL.
 
 The OpenAPI documentation of the backend API is available in `assets/api-docs/` — open `assets/api-docs/index.html` in a browser.
+
+An extra helper endpoint is available: **`POST /reset-db`**. You may call it to reset the database to the canonical seed data when needed during development or testing. It is not part of the passenger portal UI you must build.
 
 Only the following API operations are in scope:
 
