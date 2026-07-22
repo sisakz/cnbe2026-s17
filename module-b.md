@@ -25,6 +25,8 @@ All API paths in this document are relative to this base URL.
 
 The OpenAPI documentation of the backend API is available in `assets/api-docs/` — open `assets/api-docs/index.html` in a browser.
 
+A runnable copy of the backend is also provided: unzip `assets/solution-api.zip`, import `assets/database/reclaim-db.sql` into MySQL, set the database credentials in `api/.env`, and serve it (see `RUN.md` inside the zip). It behaves identically to the hosted API, including the intentional `rejected` filter delay.
+
 An extra helper endpoint is available: **`POST /reset-db`**. You may call it to reset the database to the canonical seed data when needed during development or testing. It is not part of the passenger portal UI you must build.
 
 Only the following API operations are in scope:
