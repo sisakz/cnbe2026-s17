@@ -44,9 +44,9 @@ This competition has **six** separate tasks. Together they cover speed exercises
 
 ## Task descriptions (detail)
 
-- [Module A - Backend SSR](module-a.md)
-- [Module B - Backend API](module-b.md)
-- [Module C - Frontend using API](module-c.md)
+- [Module A - Backend API](module-a.md)
+- [Module B - Frontend using API](module-b.md)
+- [Module C - Full-Stack Application](module-c.md)
 
 ## Competitor Handout
 
