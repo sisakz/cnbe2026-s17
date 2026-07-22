@@ -77,10 +77,10 @@ Add `shadowDatabaseUrl` to the `datasource` block in `schema.prisma` (replace `X
 datasource db {
   provider          = "mysql"
   url               = env("DATABASE_URL")
-  shadowDatabaseUrl = "mysql://cXX:YYYY@db.cnbe.skillsit.eu:3306/cXX_module-c"
+  shadowDatabaseUrl = "mysql://cXX:YYYY@db.cnbe.skillsit.eu:3306/cXX_module-b"
 }
 ```
 
-Use the same username (`cXX`) and PIN (`YYYY`) as for your normal database connection. Only the database name at the end should differ from `DATABASE_URL` when you reuse `module-c` as the shadow DB.
+Use the same username (`cXX`) and PIN (`YYYY`) as for your normal database connection. Only the database name at the end should differ from `DATABASE_URL` when you reuse `module-b` as the shadow DB.
 
 **Note:** `prisma migrate deploy` (used in production-style deploys) does not need a shadow database. This configuration is only required if you run `prisma migrate dev` locally during the competition.
