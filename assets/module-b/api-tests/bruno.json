@@ -1,6 +1,6 @@
 {
   "version": "1",
-  "name": "ReClaim API - Module B Tests",
+  "name": "ReClaim API - Module A Tests",
   "type": "collection",
   "ignore": [
     "node_modules",
@@ -8,13 +8,5 @@
   ],
   "security": {
     "appMode": "developer"
-  },
-  "scripts": {
-    "moduleWhitelist": [
-      "child_process"
-    ],
-    "filesystemAccess": {
-      "allow": true
-    }
   }
 }

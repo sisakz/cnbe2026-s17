@@ -1,0 +1,22 @@
+meta {
+  name: token-separation-reverse
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/passenger/claims
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminToken}}
+}
+
+tests {
+  test("A8: a staff token is rejected on passenger endpoints", function() {
+    expect(res.status).to.equal(401);
+    expect(res.body.message).to.equal("Unauthenticated");
+  });
+}

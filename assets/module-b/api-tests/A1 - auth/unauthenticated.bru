@@ -1,0 +1,18 @@
+meta {
+  name: unauthenticated
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/items
+  body: none
+  auth: none
+}
+
+tests {
+  test("A1: protected endpoint without token returns 401", function() {
+    expect(res.status).to.equal(401);
+    expect(res.body.message).to.equal("Unauthenticated");
+  });
+}

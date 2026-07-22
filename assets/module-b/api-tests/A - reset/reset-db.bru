@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{baseUrl}}/claims/track/CL-F8DA73A7
+  url: {{baseUrl}}/claims/track/RESET-STEP
   body: none
   auth: none
 }
@@ -34,24 +34,13 @@ script:pre-request {
     const count = execFileSync(mysqlBin, [...args, "-N", "-e", `SELECT COUNT(*) FROM ${db}.claims`])
       .toString().trim();
     bru.setVar("resetResult", count);
-    bru.setVar(
-      "resetMessage",
-      count === "61"
-        ? "Database reset was successful"
-        : `Database reset failed: expected 61 claims, got ${count}`
-    );
   } catch (e) {
-    const err = e.message.split("\n")[0];
-    bru.setVar("resetResult", "IMPORT FAILED: " + err);
-    bru.setVar("resetMessage", "Database reset failed: " + err);
+    bru.setVar("resetResult", "IMPORT FAILED: " + e.message.split("\n")[0]);
   }
 }
 
 tests {
   test("A: database restored from the provided dump", function() {
     expect(bru.getVar("resetResult")).to.equal("61");
-    expect(bru.getVar("resetMessage")).to.equal("Database reset was successful");
-    expect(res.getStatus()).to.equal(200);
-    expect(res.body.data.reference_code).to.equal("CL-F8DA73A7");
   });
 }

@@ -1,4 +1,4 @@
-# ReClaim API — Module B Test Suite (Bruno)
+# ReClaim API — Module A Test Suite (Bruno)
 
 The same automated tests used for assessment — run them throughout the module.
 
@@ -18,7 +18,7 @@ Right-click a folder → **Run**, in this order:
 
 1. `A - reset` — re-imports `../database/reclaim-db.sql` into your MySQL database
    (needs none of your code; some tests change data, so always start here)
-2. `B1 - auth` — stores the tokens the other folders use
+2. `A1 - auth` — stores the tokens the other folders use
 3. The folder you are working on
 
 ## Running everything
@@ -26,4 +26,4 @@ Right-click a folder → **Run**, in this order:
 Run from the collection root — folders execute in order, the database is reset at
 the start and end automatically, and the run is repeatable.
 
-Test names carry the marking sub-criterion (`B1:` … `B8:`).
+Test names carry the marking sub-criterion (`A1:` … `A8:`).

@@ -1,0 +1,26 @@
+meta {
+  name: login-invalid
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/login
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  { "email": "admin1@reclaim-pvg.cn", "password": "wrongpassword" }
+}
+
+tests {
+  test("A1: invalid credentials return 401", function() {
+    expect(res.status).to.equal(401);
+    expect(res.body.message).to.equal("Invalid credentials");
+  });
+}

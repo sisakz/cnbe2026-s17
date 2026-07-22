@@ -1,0 +1,22 @@
+meta {
+  name: withdraw
+  type: http
+  seq: 13
+}
+
+post {
+  url: {{baseUrl}}/passenger/claims/{{newClaimId}}/withdraw
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{passengerToken}}
+}
+
+tests {
+  test("A8: an open claim can be withdrawn", function() {
+    expect(res.status).to.equal(200);
+    expect(res.body.data.status).to.equal("withdrawn");
+  });
+}

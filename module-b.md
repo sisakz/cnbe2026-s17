@@ -28,15 +28,15 @@ The same Bruno test suite used for assessment is provided in `dist/api-tests/` �
    - `baseUrl` — wherever your API runs, e.g. `http://localhost:8000/api` or `http://localhost/<folder>/api`
    - `dbName`, `dbUser`, `dbPass` (and `dbHost` / `dbPort` if not local defaults) — your MySQL connection, so the suite can reset your data for you
    - `mysqlPath` — only if the `mysql` command is not on your PATH, set the full path to the MySQL command-line client
-3. Test names carry the marking sub-criterion (`B1:` … `B8:`) — a green test is the same check the assessors will run
+3. Test names carry the marking sub-criterion (`A1:` … `A8:`) — a green test is the same check the assessors will run
 
 **Testing one part at a time** (recommended while you build — you do not need the whole API working to test the part you are on). Right-click a folder → **Run**, in this order:
 
 1. `A - reset` — re-imports the provided dump directly into your MySQL database. It needs none of your code, so it works from the first minute of the module (some tests change data — always start here)
-2. `B1 - auth` — logs in and stores the tokens every other folder uses
-3. The folder you are working on, e.g. `B3 - items`
+2. `A1 - auth` — logs in and stores the tokens every other folder uses
+3. The folder you are working on, e.g. `A3 - items`
 
-`B8 - passenger-portal` handles its own passenger login, but still needs steps 1 and 2 first (some of its tests use the staff token).
+`A8 - passenger-portal` handles its own passenger login, but still needs steps 1 and 2 first (some of its tests use the staff token).
 
 **Running everything**: run from the collection root — folders execute in order, the database is reset from the dump at the start and end automatically, and the run is repeatable.
 
@@ -75,7 +75,7 @@ Unauthenticated requests return `401`: `{"message": "Unauthenticated"}`
 
 ### Passenger Auth
 
-`POST /passenger/register` and `POST /passenger/login` — see Passenger Portal section. Separate token system from staff; staff tokens are rejected on `/passenger/*` endpoints and vice versa.
+`POST /passenger/register` and `POST /passenger/login` — see Passenger Portal section. Separate token system from staff; staff tokens are rejected on `/passenger/*` endpoints and vice versa. One deliberate exception: `GET /terminals` accepts either token (see Terminals).
 
 ## Roles
 
@@ -145,6 +145,8 @@ All terminals with counts. No pagination. Agents see only their assigned termina
 ```
 
 `open_claims_count` counts claims with status `submitted` or `under-review`.
+
+`GET /terminals` also accepts a **passenger token**: passengers receive **all** terminals (this feeds the terminal selector in the passenger portal's claim form). Staff behaviour is unchanged — agents still see only their assigned terminals.
 
 ### `GET /terminals/{id}`
 

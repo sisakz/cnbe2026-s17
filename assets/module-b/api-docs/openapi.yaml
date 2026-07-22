@@ -87,8 +87,9 @@ paths:
   /terminals:
     get:
       tags: [Terminals]
-      summary: List terminals with counts (no pagination; agents see only assigned terminals)
-      security: [{ StaffBearer: [] }]
+      summary: List terminals with counts (no pagination; staff token = agents scoped, passenger token = all terminals)
+      description: Accepts either token system. Agents see only their assigned terminals; admins and passengers receive all terminals. Passenger access exists to feed the claim form's terminal selector.
+      security: [{ StaffBearer: [] }, { PassengerBearer: [] }]
       responses:
         '200':
           description: Terminals

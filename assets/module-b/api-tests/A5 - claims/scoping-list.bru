@@ -1,0 +1,24 @@
+meta {
+  name: scoping-list
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{baseUrl}}/claims
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{agentToken}}
+}
+
+tests {
+  test("A5: agent claim list is scoped to assigned terminals", function() {
+    expect(res.status).to.equal(200);
+    res.body.data.forEach(claim => {
+      expect([1, 3]).to.include(claim.terminal.id);
+    });
+  });
+}

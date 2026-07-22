@@ -1,0 +1,22 @@
+meta {
+  name: my-terminals-admin
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/my-terminals
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminToken}}
+}
+
+tests {
+  test("A7: my-terminals returns 403 for admins", function() {
+    expect(res.status).to.equal(403);
+    expect(res.body.message).to.equal("Forbidden");
+  });
+}
