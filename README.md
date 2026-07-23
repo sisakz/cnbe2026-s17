@@ -38,9 +38,9 @@ This competition has **three** separate tasks.
 
 | Day            | Module | Focus              |
 | -------------- | ------ | ------------------ |
-| Sat 07/25 (C1) | **A**  | Backend API        |
-| Sat 07/25 (C1) | **B**  | Frontend Using API |
-| Sun 07/26 (C2) | **C**  | Frontend using API |
+| Sat 07/25 (C1) | **A**  | Backend API            |
+| Sat 07/25 (C1) | **B**  | Frontend using API     |
+| Sun 07/26 (C2) | **C**  | Full-Stack Application |
 
 ## Task descriptions (detail)
 
