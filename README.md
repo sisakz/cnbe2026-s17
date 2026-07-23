@@ -32,14 +32,14 @@
 
 ## Test Project
 
-This competition has **six** separate tasks. Together they cover speed exercises, backend and frontend development, a client application, design implementation, and an AI project. See the linked module briefs for full requirements.
+This competition has **three** separate tasks.
 
 ## Schedule (excerpt)
 
 | Day            | Module | Focus              |
 | -------------- | ------ | ------------------ |
-| Sat 07/25 (C1) | **A**  | Backend SSR        |
-| Sat 07/25 (C1) | **B**  | Backend API        |
+| Sat 07/25 (C1) | **A**  | Backend API        |
+| Sat 07/25 (C1) | **B**  | Frontend Using API |
 | Sun 07/26 (C2) | **C**  | Frontend using API |
 
 ## Task descriptions (detail)
