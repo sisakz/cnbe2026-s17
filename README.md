@@ -50,6 +50,6 @@ This competition has **six** separate tasks. Together they cover speed exercises
 
 ## Competitor Handout
 
-Practical setup for the competition: Gitea template repos and naming (`module-a` … `module-c`), cloning to your workstation, offline npm packages, Laravel/PHP, automatic deployment to `cnbe2026.skillsit.eu`, container logs, and per-module MySQL databases (including phpMyAdmin).
+Practical setup for the competition: Gitea template repos and naming (`module-a` … `module-c`), cloning to your workstation, offline npm packages, Laravel/PHP, automatic deployment to `foredu.cn`, container logs, and per-module MySQL databases (including phpMyAdmin).
 
 → [Competitor Handout](competitor-handout.md)

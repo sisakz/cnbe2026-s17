@@ -19,7 +19,7 @@ You will be given a working solution of the Module A ReClaim API. You must use t
 Create the application as a **Single Page Application (SPA)** using a modern JavaScript framework. Additional libraries may be used. Routing must be managed by the framework, and reloading a route must restore the same page, except for unsaved form input and temporary messages.
 
 Your API base URL:
-`https://module-a-solution-cYY-YYYY.cnt2026.skillsit.eu/api`
+`https://module-a-solution-wsYY-YYYY.foredu.cn/api`
 
 All API paths in this document are relative to this base URL.
 
