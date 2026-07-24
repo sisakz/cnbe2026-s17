@@ -49,13 +49,11 @@ Two separate authentication systems exist:
 **`POST /login`**
 
 Request:
-
 ```json
 { "email": "admin1@reclaim-pvg.cn", "password": "admin123" }
 ```
 
 Response `200`:
-
 ```json
 {
   "data": {
@@ -88,31 +86,30 @@ Forbidden actions return `403`: `{"message": "Forbidden"}`
 
 ### Terminals
 
-| Code   | Name              |
-| ------ | ----------------- |
-| PVG-T1 | Terminal 1        |
-| PVG-T2 | Terminal 2        |
+| Code | Name |
+| ---- | ---- |
+| PVG-T1 | Terminal 1 |
+| PVG-T2 | Terminal 2 |
 | PVG-S1 | Satellite Hall S1 |
 | PVG-S2 | Satellite Hall S2 |
 
 ### Staff
 
-| Email                 | Password | Role  | Terminals                                       |
-| --------------------- | -------- | ----- | ----------------------------------------------- |
-| admin1@reclaim-pvg.cn | admin123 | Admin | All                                             |
-| admin2@reclaim-pvg.cn | admin123 | Admin | All                                             |
+| Email | Password | Role | Terminals |
+| ----- | -------- | ---- | --------- |
+| admin1@reclaim-pvg.cn | admin123 | Admin | All |
+| admin2@reclaim-pvg.cn | admin123 | Admin | All |
 | agent1@reclaim-pvg.cn | agent123 | Agent | Terminal 1 (PVG-T1), Satellite Hall S1 (PVG-S1) |
 | agent2@reclaim-pvg.cn | agent123 | Agent | Terminal 2 (PVG-T2), Satellite Hall S2 (PVG-S2) |
 
 ### Passengers
-
 Sample:
 
-| Email                 | Password     | Name                            | Country  |
-| --------------------- | ------------ | ------------------------------- | -------- |
-| passenger1@email.com  | passenger123 | Li Wei                          | China    |
-| passenger2@email.com  | passenger123 | Maria Santos                    | Portugal |
-| passenger31@email.com | passenger123 | Chen Ming (deactivated account) | China    |
+| Email | Password | Name | Country |
+| ----- | -------- | ---- | ------- |
+| passenger1@email.com | passenger123 | Li Wei | China |
+| passenger2@email.com | passenger123 | Maria Santos | Portugal |
+| passenger31@email.com | passenger123 | Chen Ming (deactivated account) | China |
 
 ### Categories
 
@@ -242,7 +239,6 @@ Retiring an item after the retention period:
 ```
 
 Allowed via this endpoint:
-
 - `registered` → `in-storage` — requires `storage_shelf` (`422` without one)
 - `in-storage` → `donated` | `disposed` — **only when `found_on` is more than 60 days ago**; `422` `{"message": "Item is still within the retention period"}` otherwise
 
@@ -295,7 +291,6 @@ Single claim (same fields). Response `404` if not found. Agents get `403` if the
 Request: `{"status": "under-review"}`
 
 Allowed via this endpoint only:
-
 - `submitted` → `under-review` — an agent picks up the claim
 - `matched` → `under-review` — releases the match: the linked item returns to `in-storage` and `matched_item` becomes `null`
 
@@ -344,15 +339,15 @@ The claim must be `submitted` or `under-review` — `422` otherwise.
 
 **Step 2 — score each candidate** by comparing it with the claim (maximum 100 points):
 
-| Comparison                                             | Points |
-| ------------------------------------------------------ | ------ |
-| `brand` identical (case-insensitive; both values set)  | 30     |
-| `colour` identical (case-insensitive; both values set) | 25     |
-| item is at the claim's terminal                        | 20     |
-| days between `found_on` and `lost_on`: 0-1 days        | 25     |
-| days between `found_on` and `lost_on`: 2-3 days        | 15     |
-| days between `found_on` and `lost_on`: 4-7 days        | 5      |
-| days between `found_on` and `lost_on`: 8 days or more  | 0      |
+| Comparison | Points |
+| ---------- | ------ |
+| `brand` identical (case-insensitive; both values set) | 30 |
+| `colour` identical (case-insensitive; both values set) | 25 |
+| item is at the claim's terminal | 20 |
+| days between `found_on` and `lost_on`: 0-1 days | 25 |
+| days between `found_on` and `lost_on`: 2-3 days | 15 |
+| days between `found_on` and `lost_on`: 4-7 days | 5 |
+| days between `found_on` and `lost_on`: 8 days or more | 0 |
 
 **Step 3 — result.** Candidates scoring **less than 40 are dropped**. The rest are returned sorted by `score` (highest first); ties broken by `found_on` (newest first), then `id` (lowest first). Each entry carries the total `score` and its `breakdown`.
 
@@ -383,12 +378,12 @@ return each as { item, score, breakdown }
 
 **Worked example** — claim: jewellery, Cartier, gold, Terminal 1, lost on 1 July:
 
-| Candidate (all jewellery, in storage)                 | brand | colour | terminal | date | Score            |
-| ----------------------------------------------------- | ----- | ------ | -------- | ---- | ---------------- |
-| Cartier gold bracelet, Terminal 1, found 1 July       | 30    | 25     | 20       | 25   | **100**          |
-| Cartier gold necklace, Terminal 2, found 29 June      | 30    | 25     | 0        | 15   | **70**           |
-| Tiffany silver ring, Terminal 1, found 1 July         | 0     | 0      | 20       | 25   | **45**           |
-| Pandora rose-gold bracelet, Terminal 2, found 21 June | 0     | 0      | 0        | 0    | 0 — not returned |
+| Candidate (all jewellery, in storage) | brand | colour | terminal | date | Score |
+| ------------------------------------- | ----- | ------ | -------- | ---- | ----- |
+| Cartier gold bracelet, Terminal 1, found 1 July | 30 | 25 | 20 | 25 | **100** |
+| Cartier gold necklace, Terminal 2, found 29 June | 30 | 25 | 0 | 15 | **70** |
+| Tiffany silver ring, Terminal 1, found 1 July | 0 | 0 | 20 | 25 | **45** |
+| Pandora rose-gold bracelet, Terminal 2, found 21 June | 0 | 0 | 0 | 0 | 0 — not returned |
 
 Response `200`:
 
@@ -458,21 +453,12 @@ Aggregated statistics. Agents see only their assigned terminals' data.
     "today_items": 7,
     "today_claims": 2,
     "items_by_category": {
-      "electronics": 18,
-      "documents": 23,
-      "luggage": 20,
-      "clothing": 21,
-      "jewellery": 5,
-      "keys": 14,
-      "other": 22
+      "electronics": 18, "documents": 23, "luggage": 20,
+      "clothing": 21, "jewellery": 5, "keys": 14, "other": 22
     },
     "claims_by_status": {
-      "submitted": 10,
-      "under-review": 10,
-      "matched": 7,
-      "resolved": 20,
-      "rejected": 8,
-      "withdrawn": 6
+      "submitted": 10, "under-review": 10, "matched": 7,
+      "resolved": 20, "rejected": 8, "withdrawn": 6
     },
     "recent_claims": [
       {
@@ -520,32 +506,9 @@ All terminals assigned to the agent, with items registered today and open claims
 {
   "data": [
     {
-      "terminal": {
-        "id": 1,
-        "name": "Terminal 1",
-        "code": "PVG-T1",
-        "description": "...",
-        "status": "open"
-      },
-      "todays_items": [
-        {
-          "id": 1,
-          "reference_code": "FI-...",
-          "category": "...",
-          "description": "...",
-          "status": "registered",
-          "found_location": "..."
-        }
-      ],
-      "open_claims": [
-        {
-          "id": 1,
-          "reference_code": "CL-...",
-          "category": "...",
-          "status": "submitted",
-          "passenger_name": "Li Wei"
-        }
-      ]
+      "terminal": { "id": 1, "name": "Terminal 1", "code": "PVG-T1", "description": "...", "status": "open" },
+      "todays_items": [ { "id": 1, "reference_code": "FI-...", "category": "...", "description": "...", "status": "registered", "found_location": "..." } ],
+      "open_claims": [ { "id": 1, "reference_code": "CL-...", "category": "...", "status": "submitted", "passenger_name": "Li Wei" } ]
     }
   ]
 }
@@ -679,13 +642,13 @@ Response `200`: updated profile (same shape as `GET /passenger/profile`).
 **Paginated:** `{"data": [...], "links": {...}, "meta": {"current_page": 1, "last_page": ..., "per_page": 15, "total": ...}}`
 **Error:**
 
-| Status | Meaning                | Response                                            |
-| ------ | ---------------------- | --------------------------------------------------- |
-| 401    | Unauthenticated        | `{"message": "Unauthenticated"}`                    |
-| 403    | Forbidden              | `{"message": "Forbidden"}`                          |
-| 404    | Not found              | `{"message": "Resource not found"}`                 |
-| 422    | Validation failed      | `{"message": "Validation failed", "errors": {...}}` |
-| 422    | Business rule violated | `{"message": "<descriptive message>"}`              |
+| Status | Meaning | Response |
+| ------ | ------- | -------- |
+| 401 | Unauthenticated | `{"message": "Unauthenticated"}` |
+| 403 | Forbidden | `{"message": "Forbidden"}` |
+| 404 | Not found | `{"message": "Resource not found"}` |
+| 422 | Validation failed | `{"message": "Validation failed", "errors": {...}}` |
+| 422 | Business rule violated | `{"message": "<descriptive message>"}` |
 
 > **The automated test suite (Bruno) asserts the quoted messages above — and every message quoted verbatim elsewhere in this document — character for character.** Copy them exactly as written; a spelling difference fails the test. Where the table says `<descriptive message>`, the wording is your own and only the status code is asserted.
 
