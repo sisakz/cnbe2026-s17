@@ -1,7 +1,7 @@
 meta {
   name: get-404
   type: http
-  seq: 3
+  seq: 4
 }
 
 get {
@@ -15,7 +15,7 @@ auth:bearer {
 }
 
 tests {
-  test("A2: unknown terminal returns 404", function() {
+  test("A2.4: GET /terminals/{id} returns the terminal with counts; 404 for unknown id (404)", function() {
     expect(res.status).to.equal(404);
     expect(res.body.message).to.equal("Resource not found");
   });

@@ -28,7 +28,7 @@ The same Bruno test suite used for assessment is provided in `dist/api-tests/` �
    - `baseUrl` — wherever your API runs, e.g. `http://localhost:8000/api` or `http://localhost/<folder>/api`
    - `dbName`, `dbUser`, `dbPass` (and `dbHost` / `dbPort` if not local defaults) — your MySQL connection, so the suite can reset your data for you
    - `mysqlPath` — only if the `mysql` command is not on your PATH, set the full path to the MySQL command-line client
-3. Test names carry the marking sub-criterion (`A1:` … `A8:`) — a green test is the same check the assessors will run
+3. Test names carry the marking aspect (`A1.1:` … `A9.4:`) and quote its wording — a green test is the same check the assessors will run, in the same order as the marking scheme
 
 **Testing one part at a time** (recommended while you build — you do not need the whole API working to test the part you are on). Right-click a folder → **Run**, in this order:
 

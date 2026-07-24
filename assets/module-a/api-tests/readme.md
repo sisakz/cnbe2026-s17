@@ -26,4 +26,4 @@ Right-click a folder → **Run**, in this order:
 Run from the collection root — folders execute in order, the database is reset at
 the start and end automatically, and the run is repeatable.
 
-Test names carry the marking sub-criterion (`A1:` … `A8:`).
+Test names carry the marking aspect (`A1.1:` … `A9.4:`) and quote its wording, in the same order as the marking scheme.

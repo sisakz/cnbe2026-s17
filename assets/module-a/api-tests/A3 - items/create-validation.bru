@@ -23,7 +23,7 @@ body:json {
 }
 
 tests {
-  test("A3: invalid payload returns 422 with errors object", function() {
+  test("A3.6: POST /items validates required fields, category enum, and found_on not in the future (422 with errors object)", function() {
     expect(res.status).to.equal(422);
     expect(res.body.message).to.equal("Validation failed");
     expect(res.body.errors).to.have.property("category");

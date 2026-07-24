@@ -1,7 +1,7 @@
 meta {
   name: get-single
   type: http
-  seq: 2
+  seq: 3
 }
 
 get {
@@ -15,7 +15,7 @@ auth:bearer {
 }
 
 tests {
-  test("A2: single terminal returns correct data", function() {
+  test("A2.4: GET /terminals/{id} returns the terminal with counts; 404 for unknown id (200 with counts)", function() {
     expect(res.status).to.equal(200);
     expect(res.body.data.code).to.equal("PVG-T2");
     expect(res.body.data.name).to.equal("Terminal 2");

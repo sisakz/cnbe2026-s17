@@ -1,7 +1,7 @@
 meta {
   name: terminal-items
   type: http
-  seq: 4
+  seq: 5
 }
 
 get {
@@ -15,7 +15,7 @@ auth:bearer {
 }
 
 tests {
-  test("A2: terminal items are paginated and filtered", function() {
+  test("A2.5: GET /terminals/{id}/items returns that terminal's items (paginated, ?status filter)", function() {
     expect(res.status).to.equal(200);
     expect(res.body).to.have.property("meta");
     expect(res.body.meta.per_page).to.equal(15);

@@ -1,7 +1,7 @@
 meta {
   name: resolve-double
   type: http
-  seq: 10
+  seq: 11
 }
 
 post {
@@ -15,7 +15,7 @@ auth:bearer {
 }
 
 tests {
-  test("A6: a resolved claim cannot be resolved again", function() {
+  test("A6.9: Resolve refused for claims that are not matched (422)", function() {
     expect(res.status).to.equal(422);
   });
 }

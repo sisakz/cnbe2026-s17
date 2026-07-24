@@ -15,7 +15,7 @@ auth:bearer {
 }
 
 tests {
-  test("A8: profile returns all fields without credentials", function() {
+  test("A8.8: Profile GET/PUT include all fields including address; password and api_token are never exposed (GET)", function() {
     expect(res.status).to.equal(200);
     const p = res.body.data;
     expect(p.first_name).to.equal("Li");

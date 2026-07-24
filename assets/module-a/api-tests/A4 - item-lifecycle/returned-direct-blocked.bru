@@ -1,7 +1,7 @@
 meta {
-  name: matched-direct-blocked
+  name: returned-direct-blocked
   type: http
-  seq: 5
+  seq: 6
 }
 
 patch {
@@ -19,11 +19,11 @@ headers {
 }
 
 body:json {
-  { "status": "matched" }
+  { "status": "returned" }
 }
 
 tests {
-  test("A4.4: matched and returned cannot be set directly via PATCH (422 — managed by the claim workflow) (matched)", function() {
+  test("A4.4: matched and returned cannot be set directly via PATCH (422 — managed by the claim workflow) (returned)", function() {
     expect(res.status).to.equal(422);
   });
 }

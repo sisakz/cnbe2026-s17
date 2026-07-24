@@ -1,7 +1,7 @@
 meta {
   name: filter-category-terminal
   type: http
-  seq: 11
+  seq: 3
 }
 
 get {
@@ -15,7 +15,7 @@ auth:bearer {
 }
 
 tests {
-  test("A5: category and terminal filters return the correct subset", function() {
+  test("A5.2: ?status, ?category and ?terminal_id filters return the correct subsets (category + terminal)", function() {
     expect(res.status).to.equal(200);
     expect(res.body.meta.total).to.equal(1);
     res.body.data.forEach(claim => {

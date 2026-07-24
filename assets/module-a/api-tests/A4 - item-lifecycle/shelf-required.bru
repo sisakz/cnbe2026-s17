@@ -23,7 +23,7 @@ body:json {
 }
 
 tests {
-  test("A4: moving to in-storage without a shelf returns 422", function() {
+  test("A4.1: registered → in-storage requires a storage shelf — 422 without one; shelf may be sent in the same request (422 without shelf)", function() {
     expect(res.status).to.equal(422);
     expect(res.body).to.have.property("message");
   });
