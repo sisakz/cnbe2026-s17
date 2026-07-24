@@ -37,7 +37,7 @@ script:post-response {
 }
 
 tests {
-  test("A3: item registration returns 201 with auto reference code and registered status", function() {
+  test("A3.5: POST /items returns 201 with auto-generated FI-XXXXXXXX reference code and status registered", function() {
     expect(res.status).to.equal(201);
     expect(res.body.data.reference_code).to.match(/^FI-[A-Z0-9]{8}$/);
     expect(res.body.data.status).to.equal("registered");

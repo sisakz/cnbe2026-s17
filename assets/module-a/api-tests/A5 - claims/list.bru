@@ -15,7 +15,7 @@ auth:bearer {
 }
 
 tests {
-  test("A5: claims list is paginated with passenger and terminal objects", function() {
+  test("A5.1: GET /claims returns paginated list with nested passenger, terminal and matched_item, newest first", function() {
     expect(res.status).to.equal(200);
     expect(res.body.meta.per_page).to.equal(15);
     expect(res.body.meta.total).to.equal(61);

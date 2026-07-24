@@ -1,7 +1,7 @@
 meta {
   name: login-inactive
   type: http
-  seq: 19
+  seq: 6
 }
 
 post {
@@ -19,7 +19,7 @@ body:json {
 }
 
 tests {
-  test("A8: deactivated passenger account is rejected with 401", function() {
+  test("A8.3: POST /passenger/login returns 200 with token and passenger object; 401 for invalid credentials or deactivated accounts (deactivated 401)", function() {
     expect(res.status).to.equal(401);
     expect(res.body.message).to.equal("Invalid credentials");
   });

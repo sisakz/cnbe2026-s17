@@ -1,7 +1,7 @@
 meta {
   name: staff-token-invalidated
   type: http
-  seq: 4
+  seq: 7
 }
 
 get {
@@ -15,7 +15,7 @@ auth:bearer {
 }
 
 tests {
-  test("Z: the staff token no longer works after logout", function() {
+  test("A1.4: POST /logout invalidates the token and returns 200 — subsequent requests with the old token get 401 (old token rejected)", function() {
     expect(res.status).to.equal(401);
     expect(res.body.message).to.equal("Unauthenticated");
   });

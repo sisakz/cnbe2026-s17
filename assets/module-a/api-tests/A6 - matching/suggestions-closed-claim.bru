@@ -15,7 +15,7 @@ auth:bearer {
 }
 
 tests {
-  test("A6: suggestions are refused for a claim that is not open", function() {
+  test("A6.5: Suggestions available only for submitted / under-review claims (422 otherwise)", function() {
     expect(res.status).to.equal(422);
   });
 }

@@ -1,7 +1,7 @@
 meta {
   name: token-separation-reverse
   type: http
-  seq: 6
+  seq: 12
 }
 
 get {
@@ -15,7 +15,7 @@ auth:bearer {
 }
 
 tests {
-  test("A8: a staff token is rejected on passenger endpoints", function() {
+  test("A1.6: Staff and passenger tokens are separate systems — each is rejected on the other's endpoints (401 both directions; documented exception: GET /terminals) (staff token on passenger endpoint)", function() {
     expect(res.status).to.equal(401);
     expect(res.body.message).to.equal("Unauthenticated");
   });

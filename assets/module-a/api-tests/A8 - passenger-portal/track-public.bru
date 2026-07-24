@@ -11,7 +11,7 @@ get {
 }
 
 tests {
-  test("A8: public tracking returns claim status without personal data", function() {
+  test("A8.9: GET /claims/track/{referenceCode} works without auth, returns the status subset without passenger data; 404 for unknown codes (public tracking)", function() {
     expect(res.status).to.equal(200);
     const d = res.body.data;
     expect(d.reference_code).to.equal(bru.getEnvVar("newClaimRef"));

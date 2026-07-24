@@ -1,7 +1,7 @@
 meta {
   name: cors
   type: http
-  seq: 2
+  seq: 1
 }
 
 get {
@@ -15,7 +15,8 @@ headers {
 }
 
 tests {
-  test("Z: CORS headers are present for cross-origin requests", function() {
+  test("A9.2: Consistent JSON response format ({\"data\": ...} success, {\"message\": ...} errors) and CORS headers enabled", function() {
     expect(res.headers["access-control-allow-origin"]).to.equal("*");
+    expect(res.body).to.have.property("message");
   });
 }

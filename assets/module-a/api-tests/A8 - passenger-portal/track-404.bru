@@ -11,7 +11,7 @@ get {
 }
 
 tests {
-  test("A8: unknown tracking code returns 404", function() {
+  test("A8.9: GET /claims/track/{referenceCode} works without auth, returns the status subset without passenger data; 404 for unknown codes (404)", function() {
     expect(res.status).to.equal(404);
     expect(res.body.message).to.equal("Resource not found");
   });

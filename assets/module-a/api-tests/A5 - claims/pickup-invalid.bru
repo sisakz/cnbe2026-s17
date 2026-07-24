@@ -1,7 +1,7 @@
 meta {
   name: pickup-invalid
   type: http
-  seq: 6
+  seq: 8
 }
 
 patch {
@@ -23,7 +23,7 @@ body:json {
 }
 
 tests {
-  test("A5: resolved claim cannot go back to under-review", function() {
+  test("A5.5: PATCH /claims/{id}/status rejects statuses owned by dedicated endpoints and invalid transitions (422) (invalid transition)", function() {
     expect(res.status).to.equal(422);
   });
 }

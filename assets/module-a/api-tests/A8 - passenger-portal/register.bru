@@ -34,7 +34,7 @@ body:json {
 }
 
 tests {
-  test("A8: registration returns 201 with token and passenger profile", function() {
+  test("A8.1: POST /passenger/register creates the account and returns 201 with token and profile (immediate login)", function() {
     expect(res.status).to.equal(201);
     expect(res.body.data.token).to.be.a("string");
     const p = res.body.data.passenger;

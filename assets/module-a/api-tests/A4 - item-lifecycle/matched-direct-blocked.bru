@@ -1,7 +1,7 @@
 meta {
   name: matched-direct-blocked
   type: http
-  seq: 6
+  seq: 5
 }
 
 patch {
@@ -23,7 +23,7 @@ body:json {
 }
 
 tests {
-  test("A4: matched cannot be set directly on an item", function() {
+  test("A4.4: matched and returned cannot be set directly via PATCH (422 — managed by the claim workflow) (matched)", function() {
     expect(res.status).to.equal(422);
   });
 }
