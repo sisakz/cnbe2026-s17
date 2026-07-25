@@ -10,7 +10,8 @@ The same automated tests used for assessment — run them throughout the module.
    - `baseUrl` — wherever your API runs
    - `dbName`, `dbUser`, `dbPass` (and `dbHost` / `dbPort` if not defaults) — your
      MySQL connection, so the suite can reset your data for you
-   - `mysqlPath` — full path to the `mysql` client if it is not on PATH
+   - the database may be local or remote — the suite connects directly with a
+     bundled driver; nothing needs to be installed
 
 ## Testing one part at a time (recommended)
 
