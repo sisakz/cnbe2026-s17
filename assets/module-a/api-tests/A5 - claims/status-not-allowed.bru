@@ -23,7 +23,7 @@ body:json {
 }
 
 tests {
-  test("A5.5: PATCH /claims/{id}/status rejects statuses owned by dedicated endpoints and invalid transitions (422) (dedicated statuses)", function() {
+  test("A5.7: PATCH /claims/{id}/status rejects statuses owned by dedicated endpoints and invalid transitions (422) (dedicated statuses)", function() {
     expect(res.status).to.equal(422);
   });
 }

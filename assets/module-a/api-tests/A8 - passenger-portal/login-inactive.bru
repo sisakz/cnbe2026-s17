@@ -19,7 +19,8 @@ body:json {
 }
 
 tests {
-  test("A8.3: POST /passenger/login returns 200 with token and passenger object; 401 for invalid credentials or deactivated accounts (deactivated 401)", function() {
+  test("A8.5: POST /passenger/login returns 401 for invalid credentials and for deactivated accounts", function() {
+    expect(bru.getVar("pLoginInvalidOk")).to.equal("ok");
     expect(res.status).to.equal(401);
     expect(res.body.message).to.equal("Invalid credentials");
   });

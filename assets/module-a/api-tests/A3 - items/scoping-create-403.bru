@@ -29,7 +29,7 @@ body:json {
 }
 
 tests {
-  test("A3.7: Agents can register items only at their assigned terminals (403 otherwise); admins at any terminal", function() {
+  test("A3.8: Agents can register items only at their assigned terminals (403 otherwise); admins at any terminal", function() {
     expect(res.status).to.equal(403);
     expect(res.body.message).to.equal("Forbidden");
   });

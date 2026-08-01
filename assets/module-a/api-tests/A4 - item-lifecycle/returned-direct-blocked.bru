@@ -23,7 +23,7 @@ body:json {
 }
 
 tests {
-  test("A4.4: matched and returned cannot be set directly via PATCH (422 — managed by the claim workflow) (returned)", function() {
+  test("A4.8: matched and returned cannot be set directly via PATCH (422 — managed by the claim workflow) (returned)", function() {
     expect(res.status).to.equal(422);
   });
 }

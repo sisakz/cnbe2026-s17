@@ -11,7 +11,7 @@ get {
 }
 
 tests {
-  test("A1.5: All protected endpoints return 401 {\"message\": \"Unauthenticated\"} without a valid Bearer token", function() {
+  test("A1.6: All protected endpoints return 401 {\"message\": \"Unauthenticated\"} without a valid Bearer token", function() {
     expect(res.status).to.equal(401);
     expect(res.body.message).to.equal("Unauthenticated");
   });

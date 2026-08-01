@@ -15,7 +15,7 @@ auth:bearer {
 }
 
 tests {
-  test("A3.10: Item registration writes an activity log", function() {
+  test("A3.11: Item registration writes an activity log", function() {
     expect(res.status).to.equal(200);
     const createdId = parseInt(bru.getEnvVar("createdItemId"));
     const entry = res.body.data.find(e => e.action === "item_registered" && e.item && e.item.id === createdId);

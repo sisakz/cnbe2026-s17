@@ -15,7 +15,7 @@ auth:bearer {
 }
 
 tests {
-  test("A5.7: Agents are scoped to their assigned terminals for claim list and detail (403 cross-terminal) (detail 403)", function() {
+  test("A5.11: Agents are scoped to their assigned terminals for claim list and detail (403 cross-terminal) (detail 403)", function() {
     expect(res.status).to.equal(403);
     expect(res.body.message).to.equal("Forbidden");
   });

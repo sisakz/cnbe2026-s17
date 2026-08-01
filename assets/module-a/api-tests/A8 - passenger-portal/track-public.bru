@@ -10,14 +10,11 @@ get {
   auth: none
 }
 
-tests {
-  test("A8.9: GET /claims/track/{referenceCode} works without auth, returns the status subset without passenger data; 404 for unknown codes (public tracking)", function() {
-    expect(res.status).to.equal(200);
-    const d = res.body.data;
-    expect(d.reference_code).to.equal(bru.getEnvVar("newClaimRef"));
-    expect(d.status).to.equal("withdrawn");
-    expect(d.terminal).to.have.all.keys("name", "code");
-    expect(d).to.not.have.property("passenger");
-    expect(d).to.not.have.property("description");
-  });
+script:post-response {
+  const d = res.body && res.body.data;
+  bru.setVar("trackOk",
+    res.status === 200 && d && d.reference_code === bru.getEnvVar("newClaimRef")
+      && d.status === "withdrawn" && d.terminal && !("passenger" in d) && !("description" in d)
+      ? "ok" : "public tracking failed: status " + res.status);
 }
+

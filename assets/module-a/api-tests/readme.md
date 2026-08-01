@@ -27,4 +27,4 @@ Right-click a folder → **Run**, in this order:
 Run from the collection root — folders execute in order, the database is reset at
 the start and end automatically, and the run is repeatable.
 
-Test names carry the marking aspect (`A1.1:` … `A9.4:`) and quote its wording, in the same order as the marking scheme.
+The marking scheme and the tests are 1:1 — every measured row is one test line with the same id (`A1.1:` … `A9.3:`), wording, and order.

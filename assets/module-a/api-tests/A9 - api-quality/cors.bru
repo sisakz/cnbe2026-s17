@@ -15,7 +15,7 @@ headers {
 }
 
 tests {
-  test("A9.2: Consistent JSON response format ({\"data\": ...} success, {\"message\": ...} errors) and CORS headers enabled", function() {
+  test("A9.1: Consistent JSON response format ({\"data\": ...} success, {\"message\": ...} errors) and CORS headers enabled", function() {
     expect(res.headers["access-control-allow-origin"]).to.equal("*");
     expect(res.body).to.have.property("message");
   });

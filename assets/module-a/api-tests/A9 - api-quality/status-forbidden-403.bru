@@ -15,7 +15,9 @@ auth:bearer {
 }
 
 tests {
-  test("A9.3: Exact HTTP status codes as specified throughout (200, 201, 401, 403, 404, 422) — framework defaults overridden where they differ (not-allowed is 403, not 401)", function() {
+  test("A9.2: Exact status codes where framework defaults differ: login 200 (not 201), validation 422 (not 400), not-allowed 403 (not 401)", function() {
+    expect(bru.getVar("statusLoginOk")).to.equal("ok");
+    expect(bru.getVar("statusValidationOk")).to.equal("ok");
     expect(res.status).to.equal(403);
   });
 }

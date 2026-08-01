@@ -15,7 +15,8 @@ auth:bearer {
 }
 
 tests {
-  test("A1.4: POST /logout invalidates the token and returns 200 — subsequent requests with the old token get 401 (passenger old token rejected)", function() {
+  test("A8.17: POST /passenger/logout returns 200 and the old passenger token is rejected with 401 afterwards", function() {
+    expect(bru.getVar("passengerLogoutOk")).to.equal("ok");
     expect(res.status).to.equal(401);
     expect(res.body.message).to.equal("Unauthenticated");
   });

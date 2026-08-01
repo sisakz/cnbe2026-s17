@@ -23,7 +23,7 @@ body:json {
 }
 
 tests {
-  test("A8.6: POST /passenger/claims returns 201 with auto CL-XXXXXXXX code and status submitted; validation 422; activity log written with no user (validation 422)", function() {
+  test("A8.11: POST /passenger/claims returns 201 with auto CL-XXXXXXXX code and status submitted; validation 422; activity log written with no user (validation 422)", function() {
     expect(res.status).to.equal(422);
     expect(res.body.errors).to.have.property("terminal_id");
     expect(res.body.errors).to.have.property("description");

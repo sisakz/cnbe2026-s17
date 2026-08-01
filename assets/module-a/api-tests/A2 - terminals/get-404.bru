@@ -15,7 +15,8 @@ auth:bearer {
 }
 
 tests {
-  test("A2.4: GET /terminals/{id} returns the terminal with counts; 404 for unknown id (404)", function() {
+  test("A2.4: GET /terminals/{id} returns the terminal with counts; 404 for unknown id", function() {
+    expect(bru.getVar("terminalDetailOk")).to.equal("ok");
     expect(res.status).to.equal(404);
     expect(res.body.message).to.equal("Resource not found");
   });

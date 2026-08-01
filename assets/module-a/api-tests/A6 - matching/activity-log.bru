@@ -15,7 +15,7 @@ auth:bearer {
 }
 
 tests {
-  test("A6.10: Match, release and resolve write activity logs referencing the claim and item", function() {
+  test("A6.15: Match, release and resolve write activity logs referencing the claim and item", function() {
     expect(res.status).to.equal(200);
     const matched = res.body.data.find(e => e.action === "claim_matched" && e.claim && e.claim.reference_code === "CL-F8DA73A7");
     expect(matched, "no claim_matched log for CL-F8DA73A7").to.not.equal(undefined);

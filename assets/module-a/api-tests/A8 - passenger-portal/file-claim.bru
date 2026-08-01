@@ -61,14 +61,14 @@ script:post-response {
 }
 
 tests {
-  test("A8.6: POST /passenger/claims returns 201 with auto CL-XXXXXXXX code and status submitted; validation 422; activity log written with no user (201 + code + submitted)", function() {
+  test("A8.9: POST /passenger/claims returns 201 with auto CL-XXXXXXXX code and status submitted; validation 422; activity log written with no user (201 + code + submitted)", function() {
     expect(res.status).to.equal(201);
     expect(res.body.data.reference_code).to.match(/^CL-[A-Z0-9]{8}$/);
     expect(res.body.data.status).to.equal("submitted");
     expect(res.body.data.matched_item).to.equal(null);
   });
 
-  test("A8.6: POST /passenger/claims returns 201 with auto CL-XXXXXXXX code and status submitted; validation 422; activity log written with no user (log with no user)", function() {
+  test("A8.10: POST /passenger/claims returns 201 with auto CL-XXXXXXXX code and status submitted; validation 422; activity log written with no user (log with no user)", function() {
     expect(bru.getVar("noUserLogCount"), "no activity log row with NULL user for the filed claim").to.equal("1");
   });
 }
